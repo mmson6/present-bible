@@ -4,7 +4,9 @@
             <span>{{verseHash.verseNumber}}</span>
         </b-col>
         <b-col cols="11">
-            <p>{{verseHash.verse}}</p>
+            <span>{{verseHash.nkjvVerse}}</span>
+            <p class="spn-verse">{{verseHash.rvrVerse}}</p>
+            <br>
         </b-col>            
     </b-row>
 </template>
@@ -12,7 +14,11 @@
 <script>
 export default {
     name: 'Verse',
-    props: ['verseHash']
+    props: ['verseHash'],
+
+    computed: {
+
+    }
 }
 </script>
 
@@ -22,16 +28,9 @@ export default {
     color: white;
     font-size: 20px;
 }
-.drop{
-  border: 2px dashed #bbb;
-  width: 600px;
-  height: 160px;
-  line-height: 160px;
-  margin: 0 auto;
-  font-size: 24px;
-  border-radius: 5px;
-  text-align: center;
-  color: #bbb;
-  position: relative;
+.spn-verse{
+    align-content: left;
+    color: yellow;
+    font-size: 20px;
 }
 </style>

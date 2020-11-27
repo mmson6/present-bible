@@ -1,5 +1,7 @@
 {
   "name": "vue-bible",
+  "author": "Mikael J Son",
+  "description": "Bible presenter for bible senimars",
   "version": "0.1.0",
   "private": true,
   "scripts": {

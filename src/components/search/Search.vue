@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-form-input v-model="searchQuery" v-on:change="handleUserSearch" placeholder="Genesis 1:1.."></b-form-input>
+        <b-form-input type="text" v-model="searchQuery" v-on:change="handleUserSearch" placeholder="Genesis 1:1.."></b-form-input>
     </div>
 </template>
 

@@ -5,11 +5,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    c: null,
+    nkjvData: null,
+    rvrData: null,
   },
   mutations: {
     setNKJVData (state, data) {
       state.nkjvData = data
+    },
+    setRVRData (state, data) {
+      state.rvrData = data
     }
   },
   actions: {

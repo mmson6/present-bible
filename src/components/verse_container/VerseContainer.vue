@@ -3,12 +3,12 @@
         <b-col></b-col>
         <b-col cols="10" class="text-left">
             <b-row class="verseInfo">
-                <b-col cols="4">
-                    <span>{{versesInfo}}</span>
+                <b-col>
+                    <span>{{nkjvVersesInfo}}</span><span style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span><span class="spn-verse">{{rvrVersesInfo}}</span>
                 </b-col>
             </b-row>
             <br>
-            <template v-for="verseHash in nkjvHash.searchedVersesHash">
+            <template v-for="verseHash in bibleHash.searchedVersesHash">
                 <Verse :key="verseHash.verseNumber" v-bind:verseHash="verseHash"/>
             </template>
         </b-col>
@@ -23,19 +23,33 @@ import Verse from './Verse.vue'
 export default {
     name: 'VerseContainer',
     props: {
-        nkjvHash: Object
+        nkjvHash: Object,
+        bibleHash: Object
     },
     data() {
         return {
         }
     },
     computed: {
-        versesInfo() {
-            if (this.nkjvHash.book == undefined || this.nkjvHash.invalidSearch == true) {
+        infoSplitter() {
+            if (this.nkjvVersesInfo != "") {
+                return "|"
+            }
+            return ""
+        },
+        nkjvVersesInfo() {
+            if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
                 return ""
             }
-
-            return `${this.camelize(this.nkjvHash.book)} ${this.nkjvHash.chapter}:${this.nkjvHash.verses}`
+console.log(JSON.stringify(this.bibleHash))
+            return `${this.camelize(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+        },
+        rvrVersesInfo() {
+            if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
+                return ""
+            }
+console.log(JSON.stringify(this.bibleHash))
+            return `${this.camelize(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
         }
     },
     components: {
@@ -60,6 +74,11 @@ export default {
 .verseInfo {
     color: white;
     font-size: 20px;
+}
+.spn-verse{
+    /* align-content: left; */
+    color: yellow;
+    /* font-size: 20px; */
 }
 
 </style>
