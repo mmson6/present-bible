@@ -1,5 +1,58 @@
 <template>
     <b-container fluid>
+        <div>
+            <b-navbar toggleable="lg" type="dark" variant="">
+                <!-- <b-navbar-brand href="#">NavBar</b-navbar-brand>
+
+                <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+                <b-collapse id="nav-collapse" is-nav> -->
+                <b-navbar-nav>
+                    <b-nav-item v-on:click="fontSizeDown" class="fontsize-btn">-</b-nav-item>
+                    <b-nav-item v-on:click="fontSizeReset" class="fontsize-btn">O</b-nav-item>
+                    <b-nav-item v-on:click="fontSizeUp" class="fontsize-btn">+</b-nav-item>
+                </b-navbar-nav>
+
+                <!-- Right aligned nav items -->
+                <b-navbar-nav class="ml-auto">
+                    <!-- <b-row>
+                        <b-col></b-col>
+                        <b-col cols="8">
+                            <Search @showSearchedVerses="searchVerses"/>
+                        </b-col>
+                        <b-col></b-col>
+                    </b-row> -->
+                    <!-- <b-nav-form>
+                        <b-row>
+                            <b-col></b-col>
+                            <b-col cols="8">
+                                <Search @showSearchedVerses="searchVerses"/>
+                                <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
+                            </b-col>
+                            <b-col></b-col>
+                        </b-row> -->
+                    <!-- <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+                    <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button> -->
+                    <!-- </b-nav-form> -->
+
+                    <b-nav-item-dropdown text="Lang" right>
+                    <b-dropdown-item v-on:mouseover="hoverTest" class="lang-item">ENG</b-dropdown-item>
+                    <b-dropdown-item class="lang-item" >SPN</b-dropdown-item>
+                    <!-- <b-dropdown-item href="#">RU</b-dropdown-item>
+                    <b-dropdown-item href="#">FA</b-dropdown-item> -->
+                    </b-nav-item-dropdown>
+<!-- 
+                    <b-nav-item-dropdown right>
+                    <template #button-content>
+                        <em>User</em>
+                    </template>
+                    <b-dropdown-item href="#">Profile</b-dropdown-item>
+                    <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+                    </b-nav-item-dropdown> -->
+                </b-navbar-nav>
+                <!-- </b-collapse> -->
+            </b-navbar>
+            </div>
         <b-row>
             <b-col></b-col>
             <b-col cols="8">
@@ -8,7 +61,9 @@
             <b-col></b-col>
         </b-row>
         <br>
-        <VerseContainer v-bind:nkjvHash="nkjvHash" v-bind:bibleHash="bibleHash"/>
+        <VerseContainer v-bind:nkjvHash="nkjvHash"
+                        v-bind:bibleHash="bibleHash"
+                        v-bind:fontSize="fontSize"/>
     </b-container>
 </template>
 
@@ -26,6 +81,7 @@ export default {
             searchQuery: "",
             nkjvHash: {},
             bibleHash: {},
+            fontSize: 20,
         }
     },
 
@@ -35,6 +91,26 @@ export default {
     },
 
     methods: {
+        hoverTest() {
+            console.log("testttt")
+        },
+        fontSizeUp() {
+            if ((this.fontSize + 4) > 90) {
+                this.fontSize = 90;
+            } else {
+                this.fontSize += 4;
+            }
+        },
+        fontSizeReset() {
+            this.fontSize = 20;
+        },
+        fontSizeDown() {
+            if ((this.fontSize - 4) < 20) {
+                this.fontSize = 20;
+            } else {
+                this.fontSize -= 4;
+            }
+        },
         sanitizeVerse(verse) {
             let trimmed = verse.trim()
             var sanitized = trimmed.replace(/\[/g,'')
@@ -194,7 +270,7 @@ export default {
                     verses = remainder[1]
                 }
             }
-            
+
             if (nkjvBookName == "") { return }
             if (this.sameVerseInRange(verses)) {
                 verses = this.getMinVerseString(verses)
@@ -202,13 +278,14 @@ export default {
     
             for (let i=0; i < nkjvData.length; i++) {
                 let bookData = nkjvData[i]
+                console.log(bookData.bname)
                 if (bookData.bname.toLowerCase() == nkjvBookName.toLowerCase()) {
                     bookNumber = Number(bookData.bnumber)
                     nkjvVerseOutput = this.fetchNKJVVerses(bookData, chapter, verses)
                     break
                 }
             }
-            
+            console.log(JSON.stringify(nkjvVerseOutput))
             if (nkjvVerseOutput.length == 0) {
                 this.bibleHash = { invalidSearch: true }
                 // this.nkjvHash = { invalidSearch: true }
@@ -235,3 +312,17 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+.fontsize-btn {
+    width: 50px; 
+    height: 50px;
+    font-size: 20px;
+}
+
+.lang-item:hover {
+    background: green;
+    background-color: green;
+}
+</style>

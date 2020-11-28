@@ -9,7 +9,9 @@
             </b-row>
             <br>
             <template v-for="verseHash in bibleHash.searchedVersesHash">
-                <Verse :key="verseHash.verseNumber" v-bind:verseHash="verseHash"/>
+                <Verse :key="verseHash.verseNumber" 
+                        v-bind:verseHash="verseHash"
+                        v-bind:verseFontSize="fontSize"/>
             </template>
         </b-col>
         <b-col></b-col>
@@ -24,7 +26,8 @@ export default {
     name: 'VerseContainer',
     props: {
         nkjvHash: Object,
-        bibleHash: Object
+        bibleHash: Object,
+        fontSize: Number,
     },
     data() {
         return {
@@ -41,30 +44,35 @@ export default {
             if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
                 return ""
             }
-console.log(JSON.stringify(this.bibleHash))
-            return `${this.camelize(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+
+            return `${this.camelizeNKJV(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
         },
         rvrVersesInfo() {
             if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
                 return ""
             }
-console.log(JSON.stringify(this.bibleHash))
-            return `${this.camelize(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+
+            return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
         }
     },
     components: {
         Verse,
     },
     methods: {
-        camelize(str) {
-            if (str == undefined) {
-                return ""
-            }
+        camelizeNKJV(str) {
+            if (str == undefined) { return "" }
             
             return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word) {
                 return word.toUpperCase()
             })
         },
+        camelizeRVR(str) {
+            if (str == undefined) { return "" }
+
+            return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+                return (index === 0) ? word.toUpperCase() : word.toLowerCase()
+            })
+        }
     }
 }
 </script>

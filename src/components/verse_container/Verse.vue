@@ -1,5 +1,5 @@
 <template>
-    <b-row class="eng-verse">
+    <b-row class="eng-verse" v-bind:style="{ fontSize: verseFontSize + 'px' }">
         <b-col cols="1" class="text-right">
             <span>{{verseHash.verseNumber}}</span>
         </b-col>
@@ -14,7 +14,7 @@
 <script>
 export default {
     name: 'Verse',
-    props: ['verseHash'],
+    props: ['verseHash', 'verseFontSize'],
 
     computed: {
 
@@ -26,11 +26,9 @@ export default {
 .eng-verse{
     align-content: left;
     color: white;
-    font-size: 20px;
 }
 .spn-verse{
     align-content: left;
     color: yellow;
-    font-size: 20px;
 }
 </style>

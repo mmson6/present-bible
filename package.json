@@ -4,10 +4,22 @@
   "description": "Bible presenter for bible senimars",
   "version": "0.1.0",
   "private": true,
+  "build": {
+    "appId": "com.jbch.present.bible",
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.png"
+    }
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "electron:build:win": "node .electron-vue/build.js && electron-builder -w",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
