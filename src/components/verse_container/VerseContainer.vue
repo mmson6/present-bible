@@ -4,14 +4,18 @@
         <b-col cols="10" class="text-left">
             <b-row class="verseInfo">
                 <b-col>
-                    <span>{{nkjvVersesInfo}}</span><span style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span><span class="spn-verse">{{rvrVersesInfo}}</span>
+                    <span v-show="showNKJV">{{nkjvVersesInfo}}</span>
+                    <span v-show="showInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
+                    <span v-show="showRVR" class="spn-verse">{{rvrVersesInfo}}</span>
                 </b-col>
             </b-row>
             <br>
             <template v-for="verseHash in bibleHash.searchedVersesHash">
                 <Verse :key="verseHash.verseNumber" 
                         v-bind:verseHash="verseHash"
-                        v-bind:verseFontSize="fontSize"/>
+                        v-bind:verseFontSize="fontSize"
+                        v-bind:showNKJV="showNKJV"
+                        v-bind:showRVR="showRVR"/>
             </template>
         </b-col>
         <b-col></b-col>
@@ -28,12 +32,17 @@ export default {
         nkjvHash: Object,
         bibleHash: Object,
         fontSize: Number,
+        showNKJV: Boolean,
+        showRVR: Boolean,
     },
     data() {
         return {
         }
     },
     computed: {
+        showInfoSplitter() {
+            return this.showNKJV && this.showRVR
+        },
         infoSplitter() {
             if (this.nkjvVersesInfo != "") {
                 return "|"

@@ -2,57 +2,31 @@
     <b-container fluid>
         <div>
             <b-navbar toggleable="lg" type="dark" variant="">
-                <!-- <b-navbar-brand href="#">NavBar</b-navbar-brand>
-
-                <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
-                <b-collapse id="nav-collapse" is-nav> -->
                 <b-navbar-nav>
-                    <b-nav-item v-on:click="fontSizeDown" class="fontsize-btn">-</b-nav-item>
-                    <b-nav-item v-on:click="fontSizeReset" class="fontsize-btn">O</b-nav-item>
-                    <b-nav-item v-on:click="fontSizeUp" class="fontsize-btn">+</b-nav-item>
+                    <b-nav-item v-on:click="fontSizeDown" class="fontsize-btn">
+                        <v-icon color="#ececec" size="25">mdi-format-font-size-decrease</v-icon>
+                    </b-nav-item>
+                    <b-nav-item v-on:click="fontSizeReset" class="fontsize-btn">
+                        <v-icon color="#ececec" size="25">mdi-restore</v-icon>
+                    </b-nav-item>
+                    <b-nav-item v-on:click="fontSizeUp" class="fontsize-btn">
+                        <v-icon color="#ececec" size="25">mdi-format-font-size-increase</v-icon>
+                    </b-nav-item>
                 </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
-                    <!-- <b-row>
-                        <b-col></b-col>
-                        <b-col cols="8">
-                            <Search @showSearchedVerses="searchVerses"/>
-                        </b-col>
-                        <b-col></b-col>
-                    </b-row> -->
-                    <!-- <b-nav-form>
-                        <b-row>
-                            <b-col></b-col>
-                            <b-col cols="8">
-                                <Search @showSearchedVerses="searchVerses"/>
-                                <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
-                            </b-col>
-                            <b-col></b-col>
-                        </b-row> -->
-                    <!-- <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
-                    <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button> -->
-                    <!-- </b-nav-form> -->
-
-                    <b-nav-item-dropdown text="Lang" right>
-                    <b-dropdown-item >ENG</b-dropdown-item>
-                    <b-dropdown-item >SPN</b-dropdown-item>
-                    <!-- <b-dropdown-item href="#">RU</b-dropdown-item>
-                    <b-dropdown-item href="#">FA</b-dropdown-item> -->
+                    <b-nav-item-dropdown style="color: #ececec;" text="Lang" right>
+                    <b-dropdown-item v-on:click="toggleEnglish">
+                        ENG<v-icon v-show="showNKJV" class="lang-item-check" color="#3cb371" size="25">mdi-check</v-icon>
+                    </b-dropdown-item>
+                    <b-dropdown-item v-on:click="toggleSpanish">
+                        SPN<v-icon v-show="showRVR" class="lang-item-check" color="#3cb371" size="25">mdi-check</v-icon>
+                    </b-dropdown-item>
                     </b-nav-item-dropdown>
-<!-- 
-                    <b-nav-item-dropdown right>
-                    <template #button-content>
-                        <em>User</em>
-                    </template>
-                    <b-dropdown-item href="#">Profile</b-dropdown-item>
-                    <b-dropdown-item href="#">Sign Out</b-dropdown-item>
-                    </b-nav-item-dropdown> -->
                 </b-navbar-nav>
-                <!-- </b-collapse> -->
             </b-navbar>
-            </div>
+        </div>
         <b-row>
             <b-col></b-col>
             <b-col cols="8">
@@ -63,7 +37,9 @@
         <br>
         <VerseContainer v-bind:nkjvHash="nkjvHash"
                         v-bind:bibleHash="bibleHash"
-                        v-bind:fontSize="fontSize"/>
+                        v-bind:fontSize="fontSize"
+                        v-bind:showNKJV="showNKJV"
+                        v-bind:showRVR="showRVR"/>
     </b-container>
 </template>
 
@@ -82,6 +58,8 @@ export default {
             nkjvHash: {},
             bibleHash: {},
             fontSize: 20,
+            showNKJV: true,
+            showRVR: true,
         }
     },
 
@@ -91,8 +69,17 @@ export default {
     },
 
     methods: {
-        hoverTest() {
-            console.log("testttt")
+        toggleEnglish() {
+            // prevent toggling all languages
+            if (!this.showRVR && this.showNKJV) { return }
+
+            this.showNKJV = !this.showNKJV
+        },
+        toggleSpanish() {
+            // prevent toggling all languages
+            if (!this.showNKJV && this.showRVR) { return }
+
+            this.showRVR = !this.showRVR
         },
         fontSizeUp() {
             if ((this.fontSize + 4) > 90) {
@@ -325,4 +312,9 @@ export default {
     background: green;
     background-color: green;
 } */
+
+.lang-item-check {
+    padding-left: 5px;
+    padding-bottom: 5px;
+}
 </style>

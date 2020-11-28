@@ -4,8 +4,8 @@
             <span>{{verseHash.verseNumber}}</span>
         </b-col>
         <b-col cols="11">
-            <span>{{verseHash.nkjvVerse}}</span>
-            <p class="spn-verse">{{verseHash.rvrVerse}}</p>
+            <div><span v-show="showNKJV">{{verseHash.nkjvVerse}}</span></div>
+            <div><span v-show="showRVR" class="spn-verse">{{verseHash.rvrVerse}}</span></div>
             <br>
         </b-col>            
     </b-row>
@@ -14,7 +14,7 @@
 <script>
 export default {
     name: 'Verse',
-    props: ['verseHash', 'verseFontSize'],
+    props: ['verseHash', 'verseFontSize', 'showNKJV', 'showRVR'],
 
     computed: {
 
