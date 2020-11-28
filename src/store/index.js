@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     nkjvData: null,
     rvrData: null,
+    kyhgData: null,
   },
   mutations: {
     setNKJVData (state, data) {
@@ -14,6 +15,9 @@ export default new Vuex.Store({
     },
     setRVRData (state, data) {
       state.rvrData = data
+    },
+    setKYHGData (state, data) {
+      state.kyhgData = data
     }
   },
   actions: {

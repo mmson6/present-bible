@@ -2,27 +2,28 @@
     <b-container fluid>
         <div>
             <b-navbar toggleable="lg" type="dark" variant="">
-                <b-navbar-nav>
-                    <b-nav-item v-on:click="fontSizeDown" class="fontsize-btn">
-                        <v-icon color="#ececec" size="25">mdi-format-font-size-decrease</v-icon>
-                    </b-nav-item>
-                    <b-nav-item v-on:click="fontSizeReset" class="fontsize-btn">
-                        <v-icon color="#ececec" size="25">mdi-restore</v-icon>
-                    </b-nav-item>
-                    <b-nav-item v-on:click="fontSizeUp" class="fontsize-btn">
-                        <v-icon color="#ececec" size="25">mdi-format-font-size-increase</v-icon>
-                    </b-nav-item>
-                </b-navbar-nav>
+                <label v-on:click="fontSizeDown" class="fontsize-btn">
+                    <v-icon color="#ececec" size="25">mdi-format-font-size-decrease</v-icon>
+                </label>
+                <label v-on:click="fontSizeReset" class="fontsize-btn">
+                    <v-icon color="#ececec" size="25">mdi-restore</v-icon>
+                </label>
+                <label v-on:click="fontSizeUp" class="fontsize-btn">
+                    <v-icon color="#ececec" size="25">mdi-format-font-size-increase</v-icon>
+                </label>
 
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
-                    <b-nav-item-dropdown style="color: #ececec;" text="Lang" right>
-                    <b-dropdown-item v-on:click="toggleEnglish">
-                        ENG<v-icon v-show="showNKJV" class="lang-item-check" color="#3cb371" size="25">mdi-check</v-icon>
-                    </b-dropdown-item>
-                    <b-dropdown-item v-on:click="toggleSpanish">
-                        SPN<v-icon v-show="showRVR" class="lang-item-check" color="#3cb371" size="25">mdi-check</v-icon>
-                    </b-dropdown-item>
+                    <b-nav-item-dropdown style="color: #ececec;" text="Bibles" right>
+                        <b-dropdown-item v-on:click="toggleNKJV">
+                            NKJV<v-icon v-show="showNKJV" class="lang-item-check" color="#3cb371" size="25">mdi-check</v-icon>
+                        </b-dropdown-item>
+                        <b-dropdown-item v-on:click="toggleKYHG">
+                            개역한글<v-icon v-show="showKYHG" class="lang-item-check" color="#3cb371" size="25">mdi-check</v-icon>
+                        </b-dropdown-item>
+                        <b-dropdown-item v-on:click="toggleRVR">
+                            RVR1960<v-icon v-show="showRVR" class="lang-item-check" color="#3cb371" size="25">mdi-check</v-icon>
+                        </b-dropdown-item>
                     </b-nav-item-dropdown>
                 </b-navbar-nav>
             </b-navbar>
@@ -35,10 +36,10 @@
             <b-col></b-col>
         </b-row>
         <br>
-        <VerseContainer v-bind:nkjvHash="nkjvHash"
-                        v-bind:bibleHash="bibleHash"
+        <VerseContainer v-bind:bibleHash="bibleHash"
                         v-bind:fontSize="fontSize"
                         v-bind:showNKJV="showNKJV"
+                        v-bind:showKYHG="showKYHG"
                         v-bind:showRVR="showRVR"/>
     </b-container>
 </template>
@@ -47,19 +48,38 @@
 
 import Search from './search/Search.vue'
 import VerseContainer from './verse_container/VerseContainer.vue'
-
+import { ipcRenderer } from 'electron'
 
 export default {
     name: 'BibleViwer',
 
+    created() {
+        ipcRenderer.on('shortkey-message', (event, arg) => {
+            if (arg == "font-increase") {
+                this.fontSizeUp()
+            } else if (arg == "font-decrease") {
+                this.fontSizeDown()
+            } else if (arg == "font-restore") {
+                this.fontSizeReset()
+            } else if (arg == "toggle-nkjv") {
+                this.toggleNKJV()
+            } else if (arg == "toggle-kyhg") {
+                this.toggleKYHG()
+            } else if (arg == "toggle-rvr") {
+                this.toggleRVR()
+            } else if (arg == "show-all") {
+                this.showAllBibles()
+            }
+        })
+    },
     data() {
         return {
             searchQuery: "",
-            nkjvHash: {},
             bibleHash: {},
             fontSize: 20,
             showNKJV: true,
             showRVR: true,
+            showKYHG: true,
         }
     },
 
@@ -69,15 +89,26 @@ export default {
     },
 
     methods: {
-        toggleEnglish() {
+        showAllBibles() {
+            this.showNKJV = true
+            this.showKYHG = true
+            this.showRVR = true
+        },
+        toggleNKJV() {
             // prevent toggling all languages
-            if (!this.showRVR && this.showNKJV) { return }
+            if (!this.showRVR && !this.showKYHG && this.showNKJV) { return }
 
             this.showNKJV = !this.showNKJV
         },
-        toggleSpanish() {
+        toggleKYHG() {
             // prevent toggling all languages
-            if (!this.showNKJV && this.showRVR) { return }
+            if (!this.showNKJV && !this.showRVR && this.showKYHG) { return }
+
+            this.showKYHG = !this.showKYHG
+        },
+        toggleRVR() {
+            // prevent toggling all languages
+            if (!this.showNKJV && !this.showKYHG && this.showRVR) { return }
 
             this.showRVR = !this.showRVR
         },
@@ -225,6 +256,55 @@ export default {
             }
             return { bookName: bookName, rvrVerseOutput: verseOutput }
         },
+        fetchKYHGVerses(bookNumber, chapter, verses) {
+            var verseOutput = []
+            let kyhgData = this.$store.state.kyhgData
+            let bookData = kyhgData[bookNumber-1]
+            var bookName = ""
+
+            // find spanish book name
+            for(let i=0; i<kyhgData.length; i++) {
+                if (Number(kyhgData[i].bnumber) == bookNumber) {
+                    bookName = kyhgData[i].bname
+                    break
+                }
+            }
+
+            let chapterData = bookData.CHAPTER
+            if (Array.isArray(chapterData)) {
+                const searchedChapter = chapterData[Number(chapter)-1]
+                const verseData = searchedChapter.VERS
+                if (verses.includes("-")) {
+                    // handle verses with range
+                    let verseRange = verses.split('-', 2)
+                    const min = Number(verseRange[0])
+                    const max = Number(verseRange[1])
+                    
+                    for (let i=0; i <= max-min; i++) {
+                        let target = min + i - 1
+                        verseOutput.push({ verseNumber: target+1, verse: this.sanitizeVerse(verseData[target]) })
+                    }
+                } else {
+                    verseOutput.push({ verseNumber: Number(verses), verse: this.sanitizeVerse(verseData[Number(verses)-1]) })
+                }
+            } else {
+                const verseData = chapterData.VERS
+                if (verses.includes("-")) {
+                    // handle verses with range
+                    let verseRange = verses.split('-', 2)
+                    const min = Number(verseRange[0])
+                    const max = Number(verseRange[1])
+
+                    for (let i=0; i <= max-min; i++) {
+                        let target = min + i - 1
+                        verseOutput.push({ verseNumber: target+1, verse: this.sanitizeVerse(verseData[target]) })
+                    }
+                } else {
+                    verseOutput.push({ verseNumber: Number(verses), verse: this.sanitizeVerse(verseData[Number(verses)-1]) })
+                }
+            }
+            return { bookName: bookName, kyhgVerseOutput: verseOutput }
+        },
         searchVerses(searchQuery) {
             let nkjvData = this.$store.state.nkjvData
             // this.searchQuery = searchQuery
@@ -265,35 +345,37 @@ export default {
     
             for (let i=0; i < nkjvData.length; i++) {
                 let bookData = nkjvData[i]
-                console.log(bookData.bname)
                 if (bookData.bname.toLowerCase() == nkjvBookName.toLowerCase()) {
                     bookNumber = Number(bookData.bnumber)
                     nkjvVerseOutput = this.fetchNKJVVerses(bookData, chapter, verses)
                     break
                 }
             }
-            console.log(JSON.stringify(nkjvVerseOutput))
+
             if (nkjvVerseOutput.length == 0) {
                 this.bibleHash = { invalidSearch: true }
-                // this.nkjvHash = { invalidSearch: true }
             } else {
                 let rvrOutput = this.fetchRVRVerses(bookNumber, chapter, verses)
+                let kyhgOutput = this.fetchKYHGVerses(bookNumber, chapter, verses)
+                
                 let searchedVersesHash = []
 
-                // re-organize both nkjv and rvr data
+                // re-organize all bible data
                 for (let i=0; i<nkjvVerseOutput.length; i++) {
                     let nkjvVerseData = nkjvVerseOutput[i]
                     let rvrVerseData = rvrOutput.rvrVerseOutput[i]
+                    let kyhgVerseData = kyhgOutput.kyhgVerseOutput[i]
                     searchedVersesHash.push({ verseNumber: nkjvVerseData.verseNumber,
                                               nkjvVerse: nkjvVerseData.verse,
-                                              rvrVerse: rvrVerseData.verse })
+                                              rvrVerse: rvrVerseData.verse,
+                                              kyhgVerse: kyhgVerseData.verse })
                 }
                 this.bibleHash = { book: { nkjv: nkjvBookName.trim(),
-                                           rvr: rvrOutput.bookName.trim() },
+                                           rvr: rvrOutput.bookName.trim(),
+                                           kyhg: kyhgOutput.bookName.trim() },
                                    chapter: chapter.trim(),
                                    verses: verses.trim(),
                                    searchedVersesHash: searchedVersesHash }
-                this.nkjvHash = { book: nkjvBookName.trim(), chapter: chapter.trim(), verses: verses.trim(), searchedVersesHash: nkjvVerseOutput }
             }
         }
     }
@@ -306,6 +388,7 @@ export default {
     width: 50px; 
     height: 50px;
     font-size: 20px;
+    cursor: pointer;
 }
 /* 
 .lang-item:hover {

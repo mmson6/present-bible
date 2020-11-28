@@ -1,12 +1,13 @@
 <template>
-    <b-row class="eng-verse" v-bind:style="{ fontSize: verseFontSize + 'px' }">
+    <b-row class="verses" v-bind:style="{ fontSize: verseFontSize + 'px' }">
         <b-col cols="1" class="text-right">
-            <span>{{verseHash.verseNumber}}</span>
+            <span v-bind:style="{ fontSize: verseNumberFontSize + 'px'}">{{verseHash.verseNumber}}</span>
         </b-col>
         <b-col cols="11">
-            <div><span v-show="showNKJV">{{verseHash.nkjvVerse}}</span></div>
-            <div><span v-show="showRVR" class="spn-verse">{{verseHash.rvrVerse}}</span></div>
-            <br>
+            <div v-show="showNKJV" class="eng-verse">{{verseHash.nkjvVerse}}</div>
+            <div v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }" class="kor-verse">{{verseHash.kyhgVerse}}</div>
+            <div v-show="showRVR" v-bind:style="{ color: rvrVerseColor }" class="spn-verse">{{verseHash.rvrVerse}}</div>
+            <br>    
         </b-col>            
     </b-row>
 </template>
@@ -14,21 +15,53 @@
 <script>
 export default {
     name: 'Verse',
-    props: ['verseHash', 'verseFontSize', 'showNKJV', 'showRVR'],
+    props: ['verseHash', 'verseFontSize', 'showNKJV', 'showRVR', 'showKYHG'],
 
     computed: {
+        verseNumberFontSize() {
+            var count = 0
+            if (this.showNKJV) { count++ }
+            if (this.showRVR) { count++ }
+            if (this.showKYHG) { count++ }
 
+            if (count > 1) {
+                return 30
+            } else {
+                return 20
+            }
+        },
+        rvrVerseColor() {
+            if (this.showNKJV == false && this.showKYHG == false) { return "white" }
+            
+            return "yellow"
+        },
+        kyhgVerseColor() {
+            if (this.showNKJV == true) {
+                return "#ecd3b2"
+            } else {
+                return "white"
+            }
+        }
     }
 }
 </script>
 
 <style scoped>
-.eng-verse{
+.verses {
+    /* margin-bottom: 10px; */
     align-content: left;
     color: white;
 }
-.spn-verse{
+.eng-verse {
+    margin-bottom: 10px;
     align-content: left;
-    color: yellow;
+    color: white;
+}
+.spn-verse {
+    align-content: left;
+}
+.kor-verse {
+    margin-bottom: 10px;
+    align-content: left;
 }
 </style>

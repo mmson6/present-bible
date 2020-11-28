@@ -5,8 +5,10 @@
             <b-row class="verseInfo">
                 <b-col>
                     <span v-show="showNKJV">{{nkjvVersesInfo}}</span>
-                    <span v-show="showInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
-                    <span v-show="showRVR" class="spn-verse">{{rvrVersesInfo}}</span>
+                    <span v-show="showFirstInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
+                    <span v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }">{{kyhgVersesInfo}}</span>
+                    <span v-show="showSecondInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
+                    <span v-show="showRVR" v-bind:style="{ color: rvrVerseColor }">{{rvrVersesInfo}}</span>
                 </b-col>
             </b-row>
             <br>
@@ -15,7 +17,8 @@
                         v-bind:verseHash="verseHash"
                         v-bind:verseFontSize="fontSize"
                         v-bind:showNKJV="showNKJV"
-                        v-bind:showRVR="showRVR"/>
+                        v-bind:showRVR="showRVR"
+                        v-bind:showKYHG="showKYHG"/>
             </template>
         </b-col>
         <b-col></b-col>
@@ -29,19 +32,42 @@ import Verse from './Verse.vue'
 export default {
     name: 'VerseContainer',
     props: {
-        nkjvHash: Object,
         bibleHash: Object,
         fontSize: Number,
         showNKJV: Boolean,
         showRVR: Boolean,
+        showKYHG: Boolean,
     },
     data() {
         return {
         }
     },
     computed: {
-        showInfoSplitter() {
-            return this.showNKJV && this.showRVR
+        rvrVerseColor() {
+            if (this.showNKJV == false && this.showKYHG == false) { return "white" }
+            
+            return "yellow"
+        },
+        kyhgVerseColor() {
+            if (this.showNKJV == true) {
+                return "#ecd3b2"
+            } else {
+                return "white"
+            }
+        },
+        showFirstInfoSplitter() {
+            if (this.showNKJV == true && (this.showKYHG == true || this.showRVR == true)) { return true }
+            if (this.showKYHG == false && this.showRVR == false) { return false }
+            
+            return false
+        },
+        showSecondInfoSplitter() {
+            var count = 0
+            if (this.showNKJV) { count++ }
+            if (this.showRVR) { count++ }
+            if (this.showKYHG) { count++ }
+
+            return count == 3 || (this.showNKJV == false && this.showKYHG == true && this.showRVR == true)
         },
         infoSplitter() {
             if (this.nkjvVersesInfo != "") {
@@ -62,6 +88,13 @@ export default {
             }
 
             return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+        },
+        kyhgVersesInfo() {
+            if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
+                return ""
+            }
+
+            return `${this.bibleHash.book.kyhg} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
         }
     },
     components: {
@@ -91,11 +124,6 @@ export default {
 .verseInfo {
     color: white;
     font-size: 20px;
-}
-.spn-verse{
-    /* align-content: left; */
-    color: yellow;
-    /* font-size: 20px; */
 }
 
 </style>

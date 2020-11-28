@@ -1,9 +1,10 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, Menu, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+const isMac = process.platform === 'darwin'
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -20,10 +21,11 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+      // nodeIntegration: true
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
     }
   })
-
+  // win.ipcRenderer = ipcRenderer
   win.maximize()
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -35,7 +37,127 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
+
+  const template = [
+    { label: app.name,
+      submenu: [
+        { role: 'about' },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideothers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { role: 'quit' }]},
+    { label: 'File',
+      submenu: [
+        { role: 'close' }
+      ]},
+    { label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { label: 'Search',
+          click: () => {
+            win.webContents.send('shortkey-message', 'search')
+          },
+          accelerator: 'CmdOrCtrl + F' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'pasteAndMatchStyle' },
+        { role: 'delete' },
+        { role: 'selectAll' },
+        { type: 'separator' },
+        { label: 'Speech',
+          submenu: [
+            { role: 'startSpeaking' },
+            { role: 'stopSpeaking' }
+          ]}
+      ]},
+    { label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        // { role: 'toggleDevTools' },
+        { type: 'separator' },
+        { label: 'Toggle NKJV',
+          click: () => {
+            win.webContents.send('shortkey-message', 'toggle-nkjv')
+          },
+          accelerator: 'CmdOrCtrl + 1' },
+        { label: 'Toggle 개역한글',
+          click: () => {
+            win.webContents.send('shortkey-message', 'toggle-kyhg')
+          },
+          accelerator: 'CmdOrCtrl + 2' },
+        { label: 'Toggle RVR1960',
+          click: () => {
+            win.webContents.send('shortkey-message', 'toggle-rvr')
+          },
+          accelerator: 'CmdOrCtrl + 3' },
+        { label: 'Show All',
+          click: () => {
+            win.webContents.send('shortkey-message', 'show-all')
+          },
+          accelerator: 'CmdOrCtrl + 4' },
+        { type: 'separator' },
+        { label: 'Increase Font Size',
+          click: () => {
+            win.webContents.send('shortkey-message', 'font-increase')
+          },
+          accelerator: 'CmdOrCtrl + =' },
+        { label: 'Decrease Font Size',
+          click: () => {
+            win.webContents.send('shortkey-message', 'font-decrease')
+          },
+          accelerator: 'CmdOrCtrl + -' },
+        { label: 'Restore Font Size',
+          click: () => {
+            win.webContents.send('shortkey-message', 'font-restore')
+          },
+          accelerator: 'CmdOrCtrl + 0' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }]},
+    { label: 'Window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'zoom' },
+        { type: 'separator' },
+        { role: 'front' },
+        { type: 'separator' },
+        { role: 'window' }]},
+    { label: 'Help',
+      submenu: [
+        { label: 'Learn More',
+          click: async () => {
+            const { shell } = require('electron')
+            await shell.openExternal('https://electronjs.org')
+          }
+        }
+      ]
+    }
+  ]
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 }
+
+// const template = [
+//   { label: 'View',
+//     submenu: [{ label: 'Zoom In' },
+//               { label: 'Increate Font Size',
+//                 click: function() {
+//                   // ipcRenderer.sendSync('mike-message', 'ping')
+//                     // win.webContents.send('changeColor')
+//                   console.log("increase font called")
+//                 },
+//                 accelerator: 'CmdOrCtrl + Shift + Plus' }]}
+// ]
+// const menu = Menu.buildFromTemplate(template)
+// Menu.setApplicationMenu(menu)
+  
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -44,6 +166,9 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+
+  console.log("mike remove all?")
+  ipcMain.removeAllListeners('mike-message')
 })
 
 app.on('activate', () => {
@@ -64,6 +189,7 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+
   createWindow()
 })
 

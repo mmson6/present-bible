@@ -1,15 +1,15 @@
 {
   "name": "vue-bible",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Bible presenter for bible senimars",
   "author": "Mikael J Son",
+  "license": "UNLICENSED",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
-    "electron:build:win": "node .electron-vue/build.js && electron-builder -w",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
@@ -45,16 +45,5 @@
     "vue-cli-plugin-vuetify": "~2.0.7",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.3.0"
-  },
-  "build": {
-    "appId": "com.jbch.present.bible",
-    "mac": {
-      "target": "dmg",
-      "icon": "build/icon.png"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "build/icon.png"
-    }
   }
 }
