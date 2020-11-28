@@ -36,8 +36,8 @@
                     <!-- </b-nav-form> -->
 
                     <b-nav-item-dropdown text="Lang" right>
-                    <b-dropdown-item v-on:mouseover="hoverTest" class="lang-item">ENG</b-dropdown-item>
-                    <b-dropdown-item class="lang-item" >SPN</b-dropdown-item>
+                    <b-dropdown-item >ENG</b-dropdown-item>
+                    <b-dropdown-item >SPN</b-dropdown-item>
                     <!-- <b-dropdown-item href="#">RU</b-dropdown-item>
                     <b-dropdown-item href="#">FA</b-dropdown-item> -->
                     </b-nav-item-dropdown>
@@ -320,9 +320,9 @@ export default {
     height: 50px;
     font-size: 20px;
 }
-
+/* 
 .lang-item:hover {
     background: green;
     background-color: green;
-}
+} */
 </style>
