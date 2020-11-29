@@ -1,7 +1,7 @@
 <template>
     <b-container fluid>
         <div>
-            <b-navbar toggleable="lg" type="dark" variant="">
+            <b-navbar toggleable="lg" type="dark">
                 <label id="font-size-down-btn" v-on:click="fontSizeDown" class="setting-btn">
                     <b-tooltip target="font-size-down-btn" delay="700" 
                     variant="info" noninteractive>Decrease font size</b-tooltip>
@@ -9,28 +9,28 @@
                 </label>
                 <label id="font-size-reset-btn" v-on:click="fontSizeReset" class="setting-btn">
                     <b-tooltip target="font-size-reset-btn" delay="700" 
-                    variant="primary" noninteractive>Reset font size</b-tooltip>
+                    variant="info" noninteractive>Reset font size</b-tooltip>
                     <v-icon color="#ececec" size="25">mdi-restart</v-icon>
                 </label>
                 <label id="font-size-up-btn" v-on:click="fontSizeUp" class="setting-btn">
                     <b-tooltip target="font-size-up-btn" delay="700" 
-                    variant="secondary" noninteractive>Increase font size</b-tooltip>
+                    variant="info" noninteractive>Increase font size</b-tooltip>
                     <v-icon color="#ececec" size="25">mdi-format-font-size-increase</v-icon>
                 </label>
                 <label class="setting-btn-filler"></label>
                 <label id="verse-width-down-btn" v-on:click="sidePaddingBigger" class="setting-btn">
                     <b-tooltip target="verse-width-down-btn" delay="700" 
-                    variant="success" noninteractive>Decrease verse width</b-tooltip>
+                    variant="info" noninteractive>Decrease verse width</b-tooltip>
                     <v-icon color="#ececec" size="32">mdi-unfold-less-vertical</v-icon>
                 </label>
                 <label id="verse-width-reset-btn" v-on:click="sidePaddingReset" class="setting-btn">
                     <b-tooltip target="verse-width-reset-btn" delay="700" 
-                    variant="light" noninteractive>Reset verse width</b-tooltip>
+                    variant="info" noninteractive>Reset verse width</b-tooltip>
                     <v-icon color="#ececec" size="25">mdi-restart</v-icon>
                 </label>
                 <label id="verse-width-up-btn" v-on:click="sidePaddingSmaller" class="setting-btn">
                     <b-tooltip target="verse-width-up-btn" delay="700" 
-                    variant="warning" noninteractive>Increase verse width</b-tooltip>
+                    variant="info" noninteractive>Increase verse width</b-tooltip>
                     <v-icon color="#ececec" size="32">mdi-unfold-more-vertical</v-icon>
                 </label>
 
@@ -53,7 +53,7 @@
         <b-row>
             <b-col></b-col>
             <b-col cols="8">
-                <Search @showSearchedVerses="searchVerses"/>
+                <Search @showSearchedVerses="handleSearchRequest"/>
             </b-col>
             <b-col></b-col>
         </b-row>
@@ -71,12 +71,14 @@
 
 import Search from './search/Search.vue'
 import VerseContainer from './verse_container/VerseContainer.vue'
+import mixins from '../utility/mixins.js'
+
 import { ipcRenderer } from 'electron'
 
 export default {
     name: 'BibleViwer',
-
-    created() {
+    mixins: [mixins],
+    created() { 
         ipcRenderer.on('shortkey-message', (event, arg) => {
             if (arg == "font-increase") {
                 this.fontSizeUp()
@@ -309,7 +311,7 @@ export default {
             let bookData = kyhgData[bookNumber-1]
             var bookName = ""
 
-            // find spanish book name
+            // find korean book name
             for(let i=0; i<kyhgData.length; i++) {
                 if (Number(kyhgData[i].bnumber) == bookNumber) {
                     bookName = kyhgData[i].bname
@@ -352,18 +354,11 @@ export default {
             }
             return { bookName: bookName, kyhgVerseOutput: verseOutput }
         },
-        searchVerses(searchQuery) {
-            let nkjvData = this.$store.state.nkjvData
-            // this.searchQuery = searchQuery
-
-            const regex = /(([A-Za-z]+ [A-Za-z]+ [A-Za-z]+)|([0-9]\s[A-Za-z]+)|([A-Za-z]+))\s[0-9]{1,3}:[0-9]{1,3}(-[0-9]{1,3})?/g
-            let verseText = searchQuery.match(regex)
-            
+        handleSearchRequest(searchQuery) {
+            let verseText = searchQuery.match(this.searchRegex())
             var nkjvBookName = ""
             var chapter = ""
-            var bookNumber = 0
             var verses = ""
-            var nkjvVerseOutput = []
             if (verseText != null) {
                 let splitText = verseText[0].split(' ', 4)
                 if (splitText.length > 3) {
@@ -384,8 +379,25 @@ export default {
                     verses = remainder[1]
                 }
             }
-
+            
             if (nkjvBookName == "") { return }
+
+            if (this.isFullName(nkjvBookName)) {
+                this.performSearchFullName(searchQuery, nkjvBookName, chapter, verses)
+            } else {
+                const fullName = this.getFullName(nkjvBookName)
+
+                if (fullName == undefined) { return }
+
+                this.performSearchFullName(searchQuery, fullName, chapter, verses)
+            }
+            
+        },
+        performSearchFullName(searchQuery, nkjvBookName, chapter, verses) {
+            let nkjvData = this.$store.state.nkjvData
+            var bookNumber = 0
+            var nkjvVerseOutput = []
+
             if (this.sameVerseInRange(verses)) {
                 verses = this.getMinVerseString(verses)
             }
