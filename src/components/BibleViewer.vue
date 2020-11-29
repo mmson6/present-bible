@@ -211,7 +211,7 @@ export default {
                 if (verses == "") {
                     // return all verses of the chapter
                     verseData.forEach((verse, index) => {
-                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                        verseOutput.push({ verseNumber: index+1, verse: this.sanitizeVerse(verse) })
                     })
                 } else if (verses.includes("-")) {
                     // handle verses with range
@@ -242,7 +242,7 @@ export default {
                 if (verses == "") {
                     // return all verses of the chapter
                     verseData.forEach((verse, index) => {
-                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                        verseOutput.push({ verseNumber: index+1, verse: this.sanitizeVerse(verse) })
                     })
                 } else if (verses.includes("-")) {
                     // handle verses with range
@@ -287,7 +287,7 @@ export default {
                 if (verses == "") {
                     // return all verses of the chapter
                     verseData.forEach((verse, index) => {
-                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                        verseOutput.push({ verseNumber: index+1, verse: this.sanitizeVerse(verse) })
                     })
                 } else if (verses.includes("-")) {
                     // handle verses with range
@@ -307,7 +307,7 @@ export default {
                 if (verses == "") {
                     // return all verses of the chapter
                     verseData.forEach((verse, index) => {
-                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                        verseOutput.push({ verseNumber: index+1, verse: this.sanitizeVerse(verse) })
                     })
                 } else if (verses.includes("-")) {
                     // handle verses with range
@@ -346,7 +346,7 @@ export default {
                 if (verses == "") {
                     // return all verses of the chapter
                     verseData.forEach((verse, index) => {
-                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                        verseOutput.push({ verseNumber: index+1, verse: this.sanitizeVerse(verse) })
                     })
                 } else if (verses.includes("-")) {
                     // handle verses with range
@@ -366,7 +366,7 @@ export default {
                 if (verses == "") {
                     // return all verses of the chapter
                     verseData.forEach((verse, index) => {
-                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                        verseOutput.push({ verseNumber: index+1, verse: this.sanitizeVerse(verse) })
                     })
                 } else if (verses.includes("-")) {
                     // handle verses with range
