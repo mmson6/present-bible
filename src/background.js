@@ -11,9 +11,10 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
+let win = null;
 async function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     minWidth: 560,
     minHeight: 500,
     width: 800,
@@ -25,7 +26,7 @@ async function createWindow() {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
     }
   })
-  // win.ipcRenderer = ipcRenderer
+
   win.maximize()
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -81,7 +82,7 @@ async function createWindow() {
       submenu: [
         { role: 'reload' },
         { role: 'forceReload' },
-        { role: 'toggleDevTools' },
+        // { role: 'toggleDevTools' },
         { type: 'separator' },
         { label: 'Toggle NKJV',
           click: () => {
@@ -166,9 +167,17 @@ async function createWindow() {
     }
   ]
   
-
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
+
+  win.on('close', (event) => {
+    if (app.quitting) {
+      win = null
+    } else {
+      event.preventDefault()
+      win.hide()
+    }   
+  })
 }
 
 // Quit when all windows are closed.
@@ -186,7 +195,12 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  // if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  win.show()
+})
+
+app.on('before-quit', () => {
+  app.quitting = true
 })
 
 // This method will be called when Electron has finished
