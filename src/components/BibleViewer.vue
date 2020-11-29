@@ -380,40 +380,40 @@ export default {
         },
         handleSearchRequest(searchQuery) {
             let verseText = searchQuery.match(this.searchRegex())
-            var nkjvBookName = ""
+            var bookName = ""
             var chapter = ""
             var verses = ""
             if (verseText != null) {
                 let splitText = verseText[0].split(' ', 4)
                 if (splitText.length > 3) {
                     // Song of Solomon
-                    nkjvBookName = `${splitText[0]} ${splitText[1]} ${splitText[2]}`
+                    bookName = `${splitText[0]} ${splitText[1]} ${splitText[2]}`
                     const remainder = splitText[3].split(':', 2)
                     chapter = remainder[0]
                     verses = remainder[1] || ""
                 } else if (splitText.length > 2) {
-                    nkjvBookName = `${splitText[0]} ${splitText[1]}`
+                    bookName = `${splitText[0]} ${splitText[1]}`
                     const remainder = splitText[2].split(':', 2)
                     chapter = remainder[0]
                     verses = remainder[1] || ""
                 } else {
-                    nkjvBookName = splitText[0]
+                    bookName = splitText[0]
                     const remainder = splitText[1].split(':', 2)
                     chapter = remainder[0]
                     verses = remainder[1] || ""
                 }
             }
+            
+            if (bookName == "") { return }
 
-            if (nkjvBookName == "") { return }
-
-            // convert search string to equivalent book
-            if (!this.isFullName(nkjvBookName)) {
-                nkjvBookName = this.getFullName(nkjvBookName)
+            // convert search string to equivalent nkjv book
+            if (!this.isFullNKJVBookName(bookName)) {
+                bookName = this.getFullNKJVBookName(bookName)
             }
-
+            
             // sanitize verse text
             if (verses != "") {
-                const bookNumberString = this.getBookNumberString(nkjvBookName)
+                const bookNumberString = this.getBookNumberString(bookName)
                 const verseCount = this.getVerseCountInt(bookNumberString, chapter)
 
                 if (verses.includes("-")) {
@@ -438,13 +438,13 @@ export default {
                 verses = this.getMinVerseString(verses)
             }
             
-            this.performSearchByFullName(searchQuery, nkjvBookName, chapter, verses)
+            this.performSearchByFullName(searchQuery, bookName, chapter, verses)
         },
         performSearchByFullName(searchQuery, nkjvBookName, chapter, verses) {
             let nkjvData = this.$store.state.nkjvData
             var bookNumber = 0
             var nkjvVerseOutput = []
-
+            
             for (let i=0; i < nkjvData.length; i++) {
                 let bookData = nkjvData[i]
                 if (bookData.bname.toLowerCase() == nkjvBookName.toLowerCase()) {

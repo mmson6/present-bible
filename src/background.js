@@ -81,7 +81,7 @@ async function createWindow() {
       submenu: [
         { role: 'reload' },
         { role: 'forceReload' },
-        // { role: 'toggleDevTools' },
+        { role: 'toggleDevTools' },
         { type: 'separator' },
         { label: 'Toggle NKJV',
           click: () => {

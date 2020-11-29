@@ -7,6 +7,7 @@
             <span v-show="showSecondInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
             <span v-show="showRVR" v-bind:style="{ color: rvrVerseColor }">{{rvrVersesInfo}}</span>
         </div>
+        <br>
         <b-row class="verse-padding">
             <b-col v-show="showVersesPaddingColumns"></b-col>
             <b-col v-bind:cols="versesColumnSize" class="text-left">
@@ -138,12 +139,14 @@ export default {
 <style scoped>
 
 .verseInfo {
+    width: 100%;
     margin-left: 10%;
     color: white;
     font-size: 20px;
 }
 
 .verse-padding {
+    width: 100%;
     padding-top: 12px;
     padding-bottom: 12px;
 }
