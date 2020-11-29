@@ -15,7 +15,7 @@ export default {
             return fullName
         },
         searchRegex: () => {
-            return /(([\u3131-\uD79D]+[0-9]?[\u3131-\uD79D]*)|([A-Za-z]+ [A-Za-z]+ [A-Za-z]+)|([0-9]\s[A-Za-z]+)|([A-Za-z]+))\s[0-9]{1,3}:[0-9]{1,3}(-[0-9]{1,3})?/g
+            return /(([\u3131-\uD79D]+[0-9]?[\u3131-\uD79D]*)|([A-Za-z]+ [A-Za-z]+ [A-Za-z]+)|([0-9]\s?[A-Za-z]+)|([A-Za-z]+))\s[0-9]{1,3}(:[0-9]{1,3}(-[0-9]{1,3})?)?/g
         }
     }
   }

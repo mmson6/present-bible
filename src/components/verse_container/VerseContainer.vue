@@ -26,29 +26,6 @@
             </b-col>
             <b-col v-show="showVersesPaddingColumns"></b-col>
         </b-row>
-<!-- 
-        <b-col></b-col>
-        <b-col v-bind:cols="versesColumnSize" class="text-left">
-            <b-row class="verseInfo">
-                <b-col>
-                    <span v-show="showNKJV">{{nkjvVersesInfo}}</span>
-                    <span v-show="showFirstInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
-                    <span v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }">{{kyhgVersesInfo}}</span>
-                    <span v-show="showSecondInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
-                    <span v-show="showRVR" v-bind:style="{ color: rvrVerseColor }">{{rvrVersesInfo}}</span>
-                </b-col>
-            </b-row>
-            <br>
-            <template v-for="verseHash in bibleHash.searchedVersesHash">
-                <Verse :key="verseHash.verseNumber" 
-                        v-bind:verseHash="verseHash"
-                        v-bind:verseFontSize="fontSize"
-                        v-bind:showNKJV="showNKJV"
-                        v-bind:showRVR="showRVR"
-                        v-bind:showKYHG="showKYHG"/>
-            </template>
-        </b-col>
-        <b-col></b-col> -->
     </b-row>
 </template>
 
@@ -111,21 +88,34 @@ export default {
                 return ""
             }
 
-            return `${this.camelizeNKJV(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+            if (this.bibleHash.verses == "") {
+                return `${this.camelizeNKJV(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}`
+            } else {
+                return `${this.camelizeNKJV(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+            }
         },
         rvrVersesInfo() {
             if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
                 return ""
             }
 
-            return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+            if (this.bibleHash.verses == "") {
+                return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}`
+            } else {
+                return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+            }
         },
         kyhgVersesInfo() {
             if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
                 return ""
             }
 
-            return `${this.bibleHash.book.kyhg} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+            if (this.bibleHash.verses == "") {
+                return `${this.bibleHash.book.kyhg} ${this.bibleHash.chapter}`
+            } else {
+                return `${this.bibleHash.book.kyhg} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+            }
+            
         }
     },
     components: {

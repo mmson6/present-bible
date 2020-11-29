@@ -208,7 +208,12 @@ export default {
                 const searchedChapter = chapterData[Number(chapter)-1]
                 const verseData = searchedChapter.VERS
                 const maxVerses = verseData.length
-                if (verses.includes("-")) {
+                if (verses == "") {
+                    // return all verses of the chapter
+                    verseData.forEach((verse, index) => {
+                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                    })
+                } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
                     const min = Number(verseRange[0])
@@ -234,7 +239,12 @@ export default {
 
                 const verseData = chapterData.VERS
                 const maxVerses = verseData.length
-                if (verses.includes("-")) {
+                if (verses == "") {
+                    // return all verses of the chapter
+                    verseData.forEach((verse, index) => {
+                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                    })
+                } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
                     const min = Number(verseRange[0])
@@ -274,7 +284,12 @@ export default {
             if (Array.isArray(chapterData)) {
                 const searchedChapter = chapterData[Number(chapter)-1]
                 const verseData = searchedChapter.VERS
-                if (verses.includes("-")) {
+                if (verses == "") {
+                    // return all verses of the chapter
+                    verseData.forEach((verse, index) => {
+                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                    })
+                } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
                     const min = Number(verseRange[0])
@@ -289,7 +304,12 @@ export default {
                 }
             } else {
                 const verseData = chapterData.VERS
-                if (verses.includes("-")) {
+                if (verses == "") {
+                    // return all verses of the chapter
+                    verseData.forEach((verse, index) => {
+                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                    })
+                } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
                     const min = Number(verseRange[0])
@@ -323,7 +343,12 @@ export default {
             if (Array.isArray(chapterData)) {
                 const searchedChapter = chapterData[Number(chapter)-1]
                 const verseData = searchedChapter.VERS
-                if (verses.includes("-")) {
+                if (verses == "") {
+                    // return all verses of the chapter
+                    verseData.forEach((verse, index) => {
+                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                    })
+                } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
                     const min = Number(verseRange[0])
@@ -338,7 +363,12 @@ export default {
                 }
             } else {
                 const verseData = chapterData.VERS
-                if (verses.includes("-")) {
+                if (verses == "") {
+                    // return all verses of the chapter
+                    verseData.forEach((verse, index) => {
+                        verseOutput.push({ verseNumber: index+1, verse: verse })
+                    })
+                } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
                     const min = Number(verseRange[0])
@@ -366,42 +396,44 @@ export default {
                     nkjvBookName = `${splitText[0]} ${splitText[1]} ${splitText[2]}`
                     const remainder = splitText[3].split(':', 2)
                     chapter = remainder[0]
-                    verses = remainder[1]
+                    verses = remainder[1] || ""
                 } else if (splitText.length > 2) {
                     nkjvBookName = `${splitText[0]} ${splitText[1]}`
                     const remainder = splitText[2].split(':', 2)
                     chapter = remainder[0]
-                    verses = remainder[1]
+                    verses = remainder[1] || ""
                 } else {
                     nkjvBookName = splitText[0]
                     const remainder = splitText[1].split(':', 2)
                     chapter = remainder[0]
-                    verses = remainder[1]
+                    verses = remainder[1] || ""
                 }
             }
-            
+
             if (nkjvBookName == "") { return }
 
             if (this.isFullName(nkjvBookName)) {
-                this.performSearchFullName(searchQuery, nkjvBookName, chapter, verses)
+                this.performSearchByFullName(searchQuery, nkjvBookName, chapter, verses)
             } else {
                 const fullName = this.getFullName(nkjvBookName)
 
                 if (fullName == undefined) { return }
 
-                this.performSearchFullName(searchQuery, fullName, chapter, verses)
+                this.performSearchByFullName(searchQuery, fullName, chapter, verses)
             }
             
         },
-        performSearchFullName(searchQuery, nkjvBookName, chapter, verses) {
+        performSearchByFullName(searchQuery, nkjvBookName, chapter, verses) {
             let nkjvData = this.$store.state.nkjvData
             var bookNumber = 0
             var nkjvVerseOutput = []
 
+            // if verse range is a duplicate, reduce.
+            // ex - Genesis 1:2-2  =>  Genesis 1:2
             if (this.sameVerseInRange(verses)) {
                 verses = this.getMinVerseString(verses)
             }
-    
+            
             for (let i=0; i < nkjvData.length; i++) {
                 let bookData = nkjvData[i]
                 if (bookData.bname.toLowerCase() == nkjvBookName.toLowerCase()) {
@@ -429,6 +461,7 @@ export default {
                                               rvrVerse: rvrVerseData.verse,
                                               kyhgVerse: kyhgVerseData.verse })
                 }
+
                 this.bibleHash = { book: { nkjv: nkjvBookName.trim(),
                                            rvr: rvrOutput.bookName.trim(),
                                            kyhg: kyhgOutput.bookName.trim() },
