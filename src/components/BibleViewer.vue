@@ -81,7 +81,6 @@ export default {
     created() { 
         ipcRenderer.on('shortkey-message', (event, arg) => {
             if (arg == "font-increase") {
-                window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Feature Suggestion&body=message%20goes%20here";
                 this.fontSizeUp()
             } else if (arg == "font-decrease") {
                 this.fontSizeDown()
@@ -214,7 +213,6 @@ export default {
 
                 const searchedChapter = chapterData[Number(chapter)-1]
                 const verseData = searchedChapter.VERS
-                const maxVerses = verseData.length
                 if (verses == "") {
                     // return all verses of the chapter
                     verseData.forEach((verse, index) => {
@@ -223,19 +221,14 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    const min = Number(verseRange[0])
-                    const max = Number(verseRange[1])
-
-                    if (min > maxVerses || max > maxVerses) { return [] }
-                    if (min > max || min < 1) { return [] }
+                    var min = Number(verseRange[0])
+                    var max = Number(verseRange[1])
 
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
                         verseOutput.push({ verseNumber: target+1, verse: this.sanitizeVerse(verseData[target]) })
                     }
                 } else {
-                    if (Number(verses) > maxVerses) { return [] }
-
                     verseOutput.push({ verseNumber: Number(verses), verse: this.sanitizeVerse(verseData[Number(verses)-1]) })
                 }
             } else {
@@ -245,7 +238,6 @@ export default {
                 if (Number(chapter) > maxChapter) { return [] }
 
                 const verseData = chapterData.VERS
-                const maxVerses = verseData.length
                 if (verses == "") {
                     // return all verses of the chapter
                     verseData.forEach((verse, index) => {
@@ -254,19 +246,14 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    const min = Number(verseRange[0])
-                    const max = Number(verseRange[1])
-
-                    if (min > maxVerses || max > maxVerses) { return [] }
-                    if (min > max || min < 1) { return [] }
+                    min = Number(verseRange[0])
+                    max = Number(verseRange[1])
 
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
                         verseOutput.push({ verseNumber: target+1, verse: this.sanitizeVerse(verseData[target]) })
                     }
                 } else {
-                    if (Number(verses) > maxVerses) { return [] }
-
                     verseOutput.push({ verseNumber: Number(verses), verse: this.sanitizeVerse(verseData[Number(verses)-1]) })
                 }
             }
@@ -299,8 +286,8 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    const min = Number(verseRange[0])
-                    const max = Number(verseRange[1])
+                    var min = Number(verseRange[0])
+                    var max = Number(verseRange[1])
                     
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
@@ -319,8 +306,8 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    const min = Number(verseRange[0])
-                    const max = Number(verseRange[1])
+                    min = Number(verseRange[0])
+                    max = Number(verseRange[1])
 
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
@@ -358,9 +345,9 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    const min = Number(verseRange[0])
-                    const max = Number(verseRange[1])
-                    
+                    var min = Number(verseRange[0])
+                    var max = Number(verseRange[1])
+
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
                         verseOutput.push({ verseNumber: target+1, verse: this.sanitizeVerse(verseData[target]) })
@@ -378,9 +365,9 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    const min = Number(verseRange[0])
-                    const max = Number(verseRange[1])
-
+                    min = Number(verseRange[0])
+                    max = Number(verseRange[1])
+                    
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
                         verseOutput.push({ verseNumber: target+1, verse: this.sanitizeVerse(verseData[target]) })
@@ -419,28 +406,45 @@ export default {
 
             if (nkjvBookName == "") { return }
 
-            if (this.isFullName(nkjvBookName)) {
-                this.performSearchByFullName(searchQuery, nkjvBookName, chapter, verses)
-            } else {
-                const fullName = this.getFullName(nkjvBookName)
+            // convert search string to equivalent book
+            if (!this.isFullName(nkjvBookName)) {
+                nkjvBookName = this.getFullName(nkjvBookName)
+            }
 
-                if (fullName == undefined) { return }
+            // sanitize verse text
+            if (verses != "") {
+                const bookNumberString = this.getBookNumberString(nkjvBookName)
+                const verseCount = this.getVerseCountInt(bookNumberString, chapter)
 
-                this.performSearchByFullName(searchQuery, fullName, chapter, verses)
+                if (verses.includes("-")) {
+                    let verseRange = verses.split('-', 2)
+                    var min = Number(verseRange[0])
+                    var max = Number(verseRange[1])
+
+                    if (min > max) { return }
+                    if (min < 1 || max < 1) { return }
+
+                    if (min > verseCount) { min = verseCount }
+                    if (max > verseCount) { max = verseCount }
+                    verses = `${min}-${max}`
+                } else if (Number(verses) > verseCount) {
+                    verses = `${verseCount}`
+                } 
             }
             
-        },
-        performSearchByFullName(searchQuery, nkjvBookName, chapter, verses) {
-            let nkjvData = this.$store.state.nkjvData
-            var bookNumber = 0
-            var nkjvVerseOutput = []
-
             // if verse range is a duplicate, reduce.
             // ex - Genesis 1:2-2  =>  Genesis 1:2
             if (this.sameVerseInRange(verses)) {
                 verses = this.getMinVerseString(verses)
             }
             
+            this.performSearchByFullName(searchQuery, nkjvBookName, chapter, verses)
+        },
+        performSearchByFullName(searchQuery, nkjvBookName, chapter, verses) {
+            let nkjvData = this.$store.state.nkjvData
+            var bookNumber = 0
+            var nkjvVerseOutput = []
+
             for (let i=0; i < nkjvData.length; i++) {
                 let bookData = nkjvData[i]
                 if (bookData.bname.toLowerCase() == nkjvBookName.toLowerCase()) {

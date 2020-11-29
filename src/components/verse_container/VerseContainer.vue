@@ -1,18 +1,13 @@
 <template>
     <b-row>
-        <b-row class="verseInfo">   
-            <b-col></b-col>
-            <b-col cols="10" class="text-left">
-                <span v-show="showNKJV">{{nkjvVersesInfo}}</span>
-                <span v-show="showFirstInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
-                <span v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }">{{kyhgVersesInfo}}</span>
-                <span v-show="showSecondInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
-                <span v-show="showRVR" v-bind:style="{ color: rvrVerseColor }">{{rvrVersesInfo}}</span>
-            </b-col>
-            <b-col></b-col>
-        </b-row>
-        <br>
-        <b-row>
+        <div class="verseInfo text-left">
+            <span v-show="showNKJV">{{nkjvVersesInfo}}</span>
+            <span v-show="showFirstInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
+            <span v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }">{{kyhgVersesInfo}}</span>
+            <span v-show="showSecondInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
+            <span v-show="showRVR" v-bind:style="{ color: rvrVerseColor }">{{rvrVersesInfo}}</span>
+        </div>
+        <b-row class="verse-padding">
             <b-col v-show="showVersesPaddingColumns"></b-col>
             <b-col v-bind:cols="versesColumnSize" class="text-left">
                 <template v-for="verseHash in bibleHash.searchedVersesHash">
@@ -143,8 +138,14 @@ export default {
 <style scoped>
 
 .verseInfo {
+    margin-left: 10%;
     color: white;
     font-size: 20px;
+}
+
+.verse-padding {
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
 </style>

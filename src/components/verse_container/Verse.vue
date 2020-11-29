@@ -1,5 +1,5 @@
 <template>
-    <b-row class="verses" v-bind:style="{ fontSize: verseFontSize + 'px' }">
+    <b-row class="verses verse-padding" v-bind:style="{ fontSize: verseFontSize + 'px' }">
         <b-col cols="1" class="text-right">
             <span v-bind:style="{ fontSize: verseNumberFontSize + 'px'}">{{verseHash.verseNumber}}</span>
         </b-col>
@@ -64,4 +64,10 @@ export default {
     margin-bottom: 10px;
     align-content: left;
 }
+
+.verse-padding {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
 </style>
