@@ -1,4 +1,4 @@
-# vue-bible
+# Biblos
 
 ## Project setup
 ```

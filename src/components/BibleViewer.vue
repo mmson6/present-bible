@@ -2,14 +2,36 @@
     <b-container fluid>
         <div>
             <b-navbar toggleable="lg" type="dark" variant="">
-                <label v-on:click="fontSizeDown" class="fontsize-btn">
+                <label id="font-size-down-btn" v-on:click="fontSizeDown" class="setting-btn">
+                    <b-tooltip target="font-size-down-btn" delay="700" 
+                    variant="info" noninteractive>Decrease font size</b-tooltip>
                     <v-icon color="#ececec" size="25">mdi-format-font-size-decrease</v-icon>
                 </label>
-                <label v-on:click="fontSizeReset" class="fontsize-btn">
-                    <v-icon color="#ececec" size="25">mdi-restore</v-icon>
+                <label id="font-size-reset-btn" v-on:click="fontSizeReset" class="setting-btn">
+                    <b-tooltip target="font-size-reset-btn" delay="700" 
+                    variant="primary" noninteractive>Reset font size</b-tooltip>
+                    <v-icon color="#ececec" size="25">mdi-restart</v-icon>
                 </label>
-                <label v-on:click="fontSizeUp" class="fontsize-btn">
+                <label id="font-size-up-btn" v-on:click="fontSizeUp" class="setting-btn">
+                    <b-tooltip target="font-size-up-btn" delay="700" 
+                    variant="secondary" noninteractive>Increase font size</b-tooltip>
                     <v-icon color="#ececec" size="25">mdi-format-font-size-increase</v-icon>
+                </label>
+                <label class="setting-btn-filler"></label>
+                <label id="verse-width-down-btn" v-on:click="sidePaddingBigger" class="setting-btn">
+                    <b-tooltip target="verse-width-down-btn" delay="700" 
+                    variant="success" noninteractive>Decrease verse width</b-tooltip>
+                    <v-icon color="#ececec" size="32">mdi-unfold-less-vertical</v-icon>
+                </label>
+                <label id="verse-width-reset-btn" v-on:click="sidePaddingReset" class="setting-btn">
+                    <b-tooltip target="verse-width-reset-btn" delay="700" 
+                    variant="light" noninteractive>Reset verse width</b-tooltip>
+                    <v-icon color="#ececec" size="25">mdi-restart</v-icon>
+                </label>
+                <label id="verse-width-up-btn" v-on:click="sidePaddingSmaller" class="setting-btn">
+                    <b-tooltip target="verse-width-up-btn" delay="700" 
+                    variant="warning" noninteractive>Increase verse width</b-tooltip>
+                    <v-icon color="#ececec" size="32">mdi-unfold-more-vertical</v-icon>
                 </label>
 
                 <!-- Right aligned nav items -->
@@ -38,6 +60,7 @@
         <br>
         <VerseContainer v-bind:bibleHash="bibleHash"
                         v-bind:fontSize="fontSize"
+                        v-bind:versesColumnSize="versesColumnSize"
                         v-bind:showNKJV="showNKJV"
                         v-bind:showKYHG="showKYHG"
                         v-bind:showRVR="showRVR"/>
@@ -69,6 +92,12 @@ export default {
                 this.toggleRVR()
             } else if (arg == "show-all") {
                 this.showAllBibles()
+            } else if (arg == "verse-container-increase") {
+                this.sidePaddingSmaller()
+            } else if (arg == "verse-container-decrease") {
+                this.sidePaddingBigger()
+            } else if (arg == "verse-container-restore") {
+                this.sidePaddingReset()
             }
         })
     },
@@ -77,6 +106,7 @@ export default {
             searchQuery: "",
             bibleHash: {},
             fontSize: 20,
+            versesColumnSize: 10,
             showNKJV: true,
             showRVR: true,
             showKYHG: true,
@@ -111,6 +141,23 @@ export default {
             if (!this.showNKJV && !this.showKYHG && this.showRVR) { return }
 
             this.showRVR = !this.showRVR
+        },
+        sidePaddingBigger() {
+            if (this.versesColumnSize == 2) {
+                this.versesColumnSize = 2
+            } else {
+                this.versesColumnSize -= 1
+            }
+        },
+        sidePaddingReset() {
+            this.versesColumnSize = 10
+        },
+        sidePaddingSmaller() {
+            if (this.versesColumnSize == 12) {
+                this.versesColumnSize = 12
+            } else {
+                this.versesColumnSize += 1
+            }
         },
         fontSizeUp() {
             if ((this.fontSize + 4) > 90) {
@@ -384,7 +431,13 @@ export default {
 
 <style scoped>
 
-.fontsize-btn {
+.setting-btn-filler {
+    width: 50px; 
+    height: 50px;
+    font-size: 20px;
+}
+
+.setting-btn {
     width: 50px; 
     height: 50px;
     font-size: 20px;

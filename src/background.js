@@ -120,6 +120,22 @@ async function createWindow() {
           },
           accelerator: 'CmdOrCtrl + 0' },
         { type: 'separator' },
+        { label: 'Increase Verse Container Width',
+          click: () => {
+            win.webContents.send('shortkey-message', 'verse-container-increase')
+          },
+          accelerator: 'CmdOrCtrl + Option + =' },
+        { label: 'Decrease Verse Container Width',
+          click: () => {
+            win.webContents.send('shortkey-message', 'verse-container-decrease')
+          },
+          accelerator: 'CmdOrCtrl + Option + -' },
+        { label: 'Restore Verse Container Width',
+          click: () => {
+            win.webContents.send('shortkey-message', 'verse-container-restore')
+          },
+          accelerator: 'CmdOrCtrl + Option + 0' },
+        { type: 'separator' },
         { role: 'togglefullscreen' }]},
     { label: 'Window',
       submenu: [

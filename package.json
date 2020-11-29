@@ -1,8 +1,9 @@
 {
-  "name": "vue-bible",
-  "version": "0.1.2",
+  "name": "Biblos",
+  "version": "0.1.4",
   "private": true,
   "description": "Bible presenter for bible senimars",
+  "organization": "jbch",
   "author": "Mikael J Son",
   "license": "UNLICENSED",
   "scripts": {

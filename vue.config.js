@@ -4,6 +4,11 @@ module.exports = {
   ],
   pluginOptions: {
     electronBuilder: {
+      builderOptions: {
+        mac: {
+          icon: './src/assets/icon/app_icon.icns'
+        }
+      },
       nodeIntegration: true
     }
   }

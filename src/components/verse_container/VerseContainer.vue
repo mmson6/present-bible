@@ -1,7 +1,34 @@
 <template>
     <b-row>
+        <b-row class="verseInfo">   
+            <b-col></b-col>
+            <b-col cols="10" class="text-left">
+                <span v-show="showNKJV">{{nkjvVersesInfo}}</span>
+                <span v-show="showFirstInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
+                <span v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }">{{kyhgVersesInfo}}</span>
+                <span v-show="showSecondInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
+                <span v-show="showRVR" v-bind:style="{ color: rvrVerseColor }">{{rvrVersesInfo}}</span>
+            </b-col>
+            <b-col></b-col>
+        </b-row>
+        <br>
+        <b-row>
+            <b-col v-show="showVersesPaddingColumns"></b-col>
+            <b-col v-bind:cols="versesColumnSize" class="text-left">
+                <template v-for="verseHash in bibleHash.searchedVersesHash">
+                    <Verse :key="verseHash.verseNumber" 
+                            v-bind:verseHash="verseHash"
+                            v-bind:verseFontSize="fontSize"
+                            v-bind:showNKJV="showNKJV"
+                            v-bind:showRVR="showRVR"
+                            v-bind:showKYHG="showKYHG"/>
+                </template>
+            </b-col>
+            <b-col v-show="showVersesPaddingColumns"></b-col>
+        </b-row>
+<!-- 
         <b-col></b-col>
-        <b-col cols="10" class="text-left">
+        <b-col v-bind:cols="versesColumnSize" class="text-left">
             <b-row class="verseInfo">
                 <b-col>
                     <span v-show="showNKJV">{{nkjvVersesInfo}}</span>
@@ -21,7 +48,7 @@
                         v-bind:showKYHG="showKYHG"/>
             </template>
         </b-col>
-        <b-col></b-col>
+        <b-col></b-col> -->
     </b-row>
 </template>
 
@@ -33,6 +60,7 @@ export default {
     name: 'VerseContainer',
     props: {
         bibleHash: Object,
+        versesColumnSize: Number,
         fontSize: Number,
         showNKJV: Boolean,
         showRVR: Boolean,
@@ -54,6 +82,9 @@ export default {
             } else {
                 return "white"
             }
+        },
+        showVersesPaddingColumns() {
+            return this.versesColumnSize != 12
         },
         showFirstInfoSplitter() {
             if (this.showNKJV == true && (this.showKYHG == true || this.showRVR == true)) { return true }
