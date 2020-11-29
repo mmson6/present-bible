@@ -14,8 +14,8 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    minWidth: 530,
-    minHeight: 400,
+    minWidth: 560,
+    minHeight: 500,
     width: 800,
     height: 600,
     webPreferences: {
@@ -81,7 +81,7 @@ async function createWindow() {
       submenu: [
         { role: 'reload' },
         { role: 'forceReload' },
-        { role: 'toggleDevTools' },
+        // { role: 'toggleDevTools' },
         { type: 'separator' },
         { label: 'Toggle NKJV',
           click: () => {
