@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, Menu, protocol, BrowserWindow } from 'electron'
+import { app, Menu, ipcMain, protocol, shell, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -147,33 +147,29 @@ async function createWindow() {
         { role: 'window' }]},
     { label: 'Help',
       submenu: [
-        { label: 'Learn More',
+        { label: 'jbch.org',
           click: async () => {
-            const { shell } = require('electron')
-            await shell.openExternal('https://electronjs.org')
+            shell.openExternal("http://www.jbch.org/")
+          }},
+        { type: 'separator' },
+        { label: 'Suggest Feature',
+          click: async () => {
+            win.webContents.send('shortkey-message', 'suggest-feature')
+          }
+        },
+        { label: 'Report Issue',
+          click: async () => {
+            win.webContents.send('shortkey-message', 'report-issue')
           }
         }
       ]
     }
   ]
+  
+
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
-
-// const template = [
-//   { label: 'View',
-//     submenu: [{ label: 'Zoom In' },
-//               { label: 'Increate Font Size',
-//                 click: function() {
-//                   // ipcRenderer.sendSync('mike-message', 'ping')
-//                     // win.webContents.send('changeColor')
-//                   console.log("increase font called")
-//                 },
-//                 accelerator: 'CmdOrCtrl + Shift + Plus' }]}
-// ]
-// const menu = Menu.buildFromTemplate(template)
-// Menu.setApplicationMenu(menu)
-  
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -183,8 +179,8 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 
-  console.log("mike remove all?")
-  ipcMain.removeAllListeners('mike-message')
+  // Remove all listeners for event messages
+  ipcMain.removeAllListeners('shortkey-message')
 })
 
 app.on('activate', () => {

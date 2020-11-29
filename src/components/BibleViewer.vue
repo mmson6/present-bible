@@ -81,6 +81,7 @@ export default {
     created() { 
         ipcRenderer.on('shortkey-message', (event, arg) => {
             if (arg == "font-increase") {
+                window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Feature Suggestion&body=message%20goes%20here";
                 this.fontSizeUp()
             } else if (arg == "font-decrease") {
                 this.fontSizeDown()
@@ -100,6 +101,12 @@ export default {
                 this.sidePaddingBigger()
             } else if (arg == "verse-container-restore") {
                 this.sidePaddingReset()
+            // } else if (arg == "jbch.org") {
+            //     window.open("http://www.jbch.org/");
+            } else if (arg == "suggest-feature") {
+                window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Feature Suggestion&body=message%20goes%20here";
+            } else if (arg == "report-issue") {
+                window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Issue Report&body=message%20goes%20here";
             }
         })
     },
