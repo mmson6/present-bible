@@ -15,8 +15,8 @@ export default {
         getVerseCountInt: (bookNumberString, chapter) => {
             return bibleData.VerseCount[bookNumberString][chapter]
         },
-        getBookNumberString: (bookName) => {
-            return bibleData.BookNumber[bookName.toLowerCase()]
+        getBookNumberString: (bookFullNameNKJV) => {
+            return bibleData.BookNumber[bookFullNameNKJV.toLowerCase()]
         }
     }
   }

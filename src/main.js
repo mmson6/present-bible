@@ -2,6 +2,7 @@ import '@babel/polyfill'
 import 'mutationobserver-shim'
 import Vue from 'vue'
 import './plugins/bootstrap-vue'
+import './plugins/vue-clipboard2'
 import App from './App.vue'
 import store from './store'
 import vuetify from './plugins/vuetify';

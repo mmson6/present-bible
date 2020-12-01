@@ -7,8 +7,8 @@
             <div v-show="showNKJV" class="eng-verse">{{verseHash.nkjvVerse}}</div>
             <div v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }" class="kor-verse">{{verseHash.kyhgVerse}}</div>
             <div v-show="showRVR" v-bind:style="{ color: rvrVerseColor }" class="spn-verse">{{verseHash.rvrVerse}}</div>
-            <br>    
-        </b-col>            
+            <br>
+        </b-col>
     </b-row>
 </template>
 

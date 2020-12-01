@@ -72,8 +72,13 @@
 import Search from './search/Search.vue'
 import VerseContainer from './verse_container/VerseContainer.vue'
 import mixins from '../utility/mixins.js'
-
 import { ipcRenderer } from 'electron'
+
+const BookType = {
+  NKJV: 0,
+  KYHG: 1,
+  RVR: 2,
+};
 
 export default {
     name: 'BibleViwer',
@@ -100,8 +105,6 @@ export default {
                 this.sidePaddingBigger()
             } else if (arg == "verse-container-restore") {
                 this.sidePaddingReset()
-            // } else if (arg == "jbch.org") {
-            //     window.open("http://www.jbch.org/");
             } else if (arg == "suggest-feature") {
                 window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Feature Suggestion&body=message%20goes%20here";
             } else if (arg == "report-issue") {
@@ -127,6 +130,79 @@ export default {
     },
 
     methods: {
+        copyToClipboard() {
+            let textToCopy = ""
+            const verses = this.bibleHash.verses
+            const chapter = this.bibleHash.chapter
+            const bookNumberString = this.getBookNumberString(this.bibleHash.book.nkjv)
+            if (this.showNKJV) {
+                const formattedVerses = this.formatVerses(this.bibleHash.searchedVersesHash, verses,
+                                                    chapter, this.bibleHash.book.nkjv, BookType.NKJV,
+                                                    bookNumberString)
+                textToCopy = textToCopy.concat(`${formattedVerses}\n\n`)
+            }
+            if (this.showKYHG) {
+                const formattedVerses = this.formatVerses(this.bibleHash.searchedVersesHash, verses,
+                                                    chapter, this.bibleHash.book.kyhg, BookType.KYHG,
+                                                    bookNumberString)
+                textToCopy = textToCopy.concat(`${formattedVerses}\n\n`)    
+            }
+            if (this.showRVR) {
+                const formattedVerses = this.formatVerses(this.bibleHash.searchedVersesHash, verses,
+                                                    chapter, this.bibleHash.book.rvr, BookType.RVR,
+                                                    bookNumberString)
+                textToCopy = textToCopy.concat(`${formattedVerses}\n\n`)    
+            }
+            
+            this.$copyText(textToCopy).then(() => {
+            }, (e) => {
+                console.log(`Failed to copy to clipboard : ${e}`)
+            })
+        },
+        formatVerses(searchedVersesHash, verses, chapter, book, bookType, bookNumberString) {
+            let formatted = ""
+            const chapterSearch = verses == ""
+            if (chapterSearch) { var verseCount = this.getVerseCountInt(bookNumberString, chapter)}
+
+            switch(bookType) {
+                case BookType.NKJV:
+                    formatted = searchedVersesHash.map((verseHash) => {
+                        return `${verseHash.verseNumber} ${verseHash.nkjvVerse}`
+                    })
+                    formatted = formatted.join('  ')
+                    if (chapterSearch) {
+                        formatted = formatted.concat(` (${book} ${chapter}:1-${verseCount})`)
+                    } else {
+                        formatted = formatted.concat(` (${book} ${chapter}:${verses})`)
+                    }
+                    
+                    break
+                case BookType.KYHG:
+                    formatted = searchedVersesHash.map((verseHash) => {
+                        return `${verseHash.verseNumber} ${verseHash.kyhgVerse}`
+                    })
+                    formatted = formatted.join('  ')
+                    if (chapterSearch) {
+                        formatted = formatted.concat(` (${book} ${chapter}:1-${verseCount})`)
+                    } else {
+                        formatted = formatted.concat(` (${book} ${chapter}:${verses})`)
+                    }
+                    break
+                case BookType.RVR:
+                    formatted = searchedVersesHash.map((verseHash) => {
+                        return `${verseHash.verseNumber} ${verseHash.rvrVerse}`
+                    })
+                    formatted = formatted.join('  ')
+                    if (chapterSearch) {
+                        formatted = formatted.concat(` (${book} ${chapter}:1-${verseCount})`)
+                    } else {
+                        formatted = formatted.concat(` (${book} ${chapter}:${verses})`)
+                    }
+                    break
+            }
+
+            return formatted
+        },
         showAllBibles() {
             this.showNKJV = true
             this.showKYHG = true
@@ -190,6 +266,10 @@ export default {
             sanitized = sanitized.replace(/\]/g,'')
             return sanitized
         },
+        getChapterVerseCount(bookFullNameNKJV, chapter) {
+            const bookNumberString = this.getBookNumberString(bookFullNameNKJV)
+            return this.getVerseCountInt(bookNumberString, chapter)
+        },
         getMinVerseString(verses) {
             if (!verses.includes("-")) { return null }
 
@@ -221,8 +301,8 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    var min = Number(verseRange[0])
-                    var max = Number(verseRange[1])
+                    let min = Number(verseRange[0])
+                    let max = Number(verseRange[1])
 
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
@@ -246,8 +326,8 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    min = Number(verseRange[0])
-                    max = Number(verseRange[1])
+                    let min = Number(verseRange[0])
+                    let max = Number(verseRange[1])
 
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
@@ -286,8 +366,8 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    var min = Number(verseRange[0])
-                    var max = Number(verseRange[1])
+                    let min = Number(verseRange[0])
+                    let max = Number(verseRange[1])
                     
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
@@ -306,8 +386,8 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    min = Number(verseRange[0])
-                    max = Number(verseRange[1])
+                    let min = Number(verseRange[0])
+                    let max = Number(verseRange[1])
 
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
@@ -345,8 +425,8 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    var min = Number(verseRange[0])
-                    var max = Number(verseRange[1])
+                    let min = Number(verseRange[0])
+                    let max = Number(verseRange[1])
 
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
@@ -365,8 +445,8 @@ export default {
                 } else if (verses.includes("-")) {
                     // handle verses with range
                     let verseRange = verses.split('-', 2)
-                    min = Number(verseRange[0])
-                    max = Number(verseRange[1])
+                    let min = Number(verseRange[0])
+                    let max = Number(verseRange[1])
                     
                     for (let i=0; i <= max-min; i++) {
                         let target = min + i - 1
@@ -413,13 +493,12 @@ export default {
             
             // sanitize verse text
             if (verses != "") {
-                const bookNumberString = this.getBookNumberString(bookName)
-                const verseCount = this.getVerseCountInt(bookNumberString, chapter)
+                const verseCount = this.getChapterVerseCount(bookName, chapter)
 
                 if (verses.includes("-")) {
                     let verseRange = verses.split('-', 2)
-                    var min = Number(verseRange[0])
-                    var max = Number(verseRange[1])
+                    let min = Number(verseRange[0])
+                    let max = Number(verseRange[1])
 
                     if (min > max) { return }
                     if (min < 1 || max < 1) { return }
@@ -479,6 +558,7 @@ export default {
                                    chapter: chapter.trim(),
                                    verses: verses.trim(),
                                    searchedVersesHash: searchedVersesHash }
+                this.copyToClipboard()
             }
         }
     }
@@ -499,11 +579,6 @@ export default {
     font-size: 20px;
     cursor: pointer;
 }
-/* 
-.lang-item:hover {
-    background: green;
-    background-color: green;
-} */
 
 .lang-item-check {
     padding-left: 5px;
