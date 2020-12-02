@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-form-input autofocus ref="searchBar" type="text" v-model="searchQuery" v-on:change="handleUserSearch" placeholder="Genesis 1:1.."></b-form-input>
+        <b-form-input autofocus ref="searchBar" type="text" v-model="searchQuery" v-on:change="handleUserSearch" placeholder="Genesis 1, 요 3:16, ps 119:9-11..."></b-form-input>
     </div>
 </template>
 
