@@ -1,21 +1,19 @@
 <template>
   <div id="app">
-    <BibleViewer/>
+      <div id="nav" class="content">
+        <router-link to="/">Show</router-link>
+        <span style="padding: 0px 10px;"> | </span>
+        <router-link to="/search">Search</router-link>  
+      </div>
+      <keep-alive include="Show,Search">
+        <router-view> </router-view>
+      </keep-alive>
+      
   </div>
 </template>
 
-<script>
-import BibleViewer from './components/BibleViewer.vue'
+<style lang="scss">
 
-export default {
-  name: 'App',
-  components: {
-    BibleViewer,
-  }
-}
-</script>
-
-<style>
 
 @font-face {
   font-family: "NanumMyeongjo";
@@ -29,5 +27,27 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin: 20px;
+}
+
+#nav {
+  // padding: 30px;
+  font-size: 20px;
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+
+#content {
+  position: absolute; 
+  left: 0; 
+  right: 0; 
+  margin-left: auto; 
+  margin-right: auto; 
+  width: 100px; /* Need a specific value to work */
 }
 </style>

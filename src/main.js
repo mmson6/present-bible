@@ -13,6 +13,7 @@ Vue.config.productionTip = false
 import nkjvData from './data/nkjv.json'
 import rvrData from './data/rvr1960.json'
 import kyhgData from './data/kyhg.json'
+import router from './router'
 store.commit('setNKJVData', nkjvData)
 store.commit('setRVRData', rvrData)
 store.commit('setKYHGData', kyhgData)
@@ -20,5 +21,6 @@ store.commit('setKYHGData', kyhgData)
 new Vue({
   store,
   vuetify,
+  router,
   render: h => h(App)
 }).$mount('#app')

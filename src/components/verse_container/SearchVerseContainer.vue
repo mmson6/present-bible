@@ -1,18 +1,18 @@
 <template>
     <b-row>
         <div class="verseInfo text-left">
-            <span v-show="showNKJV">{{nkjvVersesInfo}}</span>
+            <!-- <span v-show="showNKJV">{{nkjvVersesInfo}}</span> -->
             <span v-show="showFirstInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
-            <span v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }">{{kyhgVersesInfo}}</span>
+            <!-- <span v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }">{{kyhgVersesInfo}}</span> -->
             <span v-show="showSecondInfoSplitter" style="margin-left: 25px; margin-right: 25px;">{{infoSplitter}}</span>
-            <span v-show="showRVR" v-bind:style="{ color: rvrVerseColor }">{{rvrVersesInfo}}</span>
+            <!-- <span v-show="showRVR" v-bind:style="{ color: rvrVerseColor }">{{rvrVersesInfo}}</span> -->
         </div>
         <br>
         <b-row class="verse-padding">
             <b-col v-show="showVersesPaddingColumns"></b-col>
             <b-col v-bind:cols="versesColumnSize" class="text-left">
-                <template v-show="searchTypeShow" v-for="verseHash in bibleHash.searchedVersesHash">
-                    <Verse :key="verseHash.verseNumber" 
+                <template v-for="verseHash in searchBibleHash.searchedVersesHash">
+                    <SearchVerse :key="verseHash.index" 
                             v-bind:verseHash="verseHash"
                             v-bind:verseFontSize="fontSize"
                             v-bind:showNKJV="showNKJV"
@@ -27,12 +27,12 @@
 
 <script>
 
-import Verse from './Verse.vue'
+import SearchVerse from './SearchVerse.vue'
 
 export default {
-    name: 'VerseContainer',
+    name: 'SearchVerseContainer',
     props: {
-        bibleHash: Object,
+        searchBibleHash: Object,
         versesColumnSize: Number,
         fontSize: Number,
         showNKJV: Boolean,
@@ -40,7 +40,7 @@ export default {
         showKYHG: Boolean,
     },
     components: {
-        Verse,
+        SearchVerse,
     },
     data() {
         return {
@@ -82,40 +82,43 @@ export default {
             }
             return ""
         },
-        nkjvVersesInfo() {
-            if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
-                return ""
-            }
+        // nkjvVersesInfo() {
+        //     console.log("mike 1")
+        //     if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
+        //         return ""
+        //     }
 
-            if (this.bibleHash.verses == "") {
-                return `${this.camelizeNKJV(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}`
-            } else {
-                return `${this.camelizeNKJV(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
-            }
-        },
-        rvrVersesInfo() {
-            if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
-                return ""
-            }
+        //     if (this.bibleHash.verses == "") {
+        //         return `${this.camelizeNKJV(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}`
+        //     } else {
+        //         return `${this.camelizeNKJV(this.bibleHash.book.nkjv)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+        //     }
+        // },
+        // rvrVersesInfo() {
+        //     console.log("mike 2")
+        //     if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
+        //         return ""
+        //     }
 
-            if (this.bibleHash.verses == "") {
-                return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}`
-            } else {
-                return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
-            }
-        },
-        kyhgVersesInfo() {
-            if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
-                return ""
-            }
+        //     if (this.bibleHash.verses == "") {
+        //         return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}`
+        //     } else {
+        //         return `${this.camelizeRVR(this.bibleHash.book.rvr)} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+        //     }
+        // },
+        // kyhgVersesInfo() {
+        //     console.log("mike 3")
+        //     if (this.bibleHash.book == undefined || this.bibleHash.invalidSearch == true) {
+        //         return ""
+        //     }
 
-            if (this.bibleHash.verses == "") {
-                return `${this.bibleHash.book.kyhg} ${this.bibleHash.chapter}`
-            } else {
-                return `${this.bibleHash.book.kyhg} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
-            }
+        //     if (this.bibleHash.verses == "") {
+        //         return `${this.bibleHash.book.kyhg} ${this.bibleHash.chapter}`
+        //     } else {
+        //         return `${this.bibleHash.book.kyhg} ${this.bibleHash.chapter}:${this.bibleHash.verses}`
+        //     }
             
-        }
+        // }
     },
     methods: {
         camelizeNKJV(str) {

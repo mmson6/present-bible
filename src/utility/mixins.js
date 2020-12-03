@@ -17,6 +17,10 @@ export default {
         },
         getBookNumberString: (bookFullNameNKJV) => {
             return bibleData.BookNumber[bookFullNameNKJV.toLowerCase()]
-        }
+        },
+        replaceAt: (string, index, original, replacement) => {
+            return string.substring(0, index) + replacement + string.substring(index + original.length)
+            // return string.substr(0, index) + replacement + string.substr(index + replacement.length);
+        },
     }
   }

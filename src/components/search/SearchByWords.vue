@@ -9,7 +9,7 @@
 import { ipcRenderer } from 'electron'
 
 export default {
-    name: "Search",
+    name: "SearchByWords",
     created() {
         ipcRenderer.on('shortkey-message', (event, arg) => {
             if (arg == "search") {
@@ -20,11 +20,13 @@ export default {
     data() {
         return {
             searchQuery: "",
+            searchType: "NKVJ"
         }
     },
     methods: {
         handleUserSearch() {
-            this.$emit('showSearchedVerses', this.searchQuery)
+            console.log("mike here")
+            this.$emit('searchVerses', this.searchQuery, this.searchType)
         }
     },
     computed: {

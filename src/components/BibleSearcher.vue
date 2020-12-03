@@ -53,38 +53,43 @@
         <b-row>
             <b-col></b-col>
             <b-col cols="8">
-                <Search @showSearchedVerses="handleSearchRequest"/>
+                <SearchByWords @searchVerses="handleSearchRequest"/>
             </b-col>
             <b-col></b-col>
         </b-row>
         <br>
-        <VerseContainer v-bind:bibleHash="bibleHash"
-                        v-bind:searchBiblehash="searchBiblehash"
-                        v-bind:fontSize="fontSize"
-                        v-bind:versesColumnSize="versesColumnSize"
-                        v-bind:showNKJV="showNKJV"
-                        v-bind:showKYHG="showKYHG"
-                        v-bind:showRVR="showRVR"
-                        v-bind:searchTypeShow="searchTypeShow"/>
+        <SearchVerseContainer v-bind:searchBibleHash="searchBibleHash"
+                              v-bind:fontSize="fontSize"
+                              v-bind:versesColumnSize="versesColumnSize"
+                              v-bind:showNKJV="showNKJV"
+                              v-bind:showKYHG="showKYHG"
+                              v-bind:showRVR="showRVR"/>
     </b-container>
 </template>
 
 <script>
 
-import Search from './search/Search.vue'
-import VerseContainer from './verse_container/VerseContainer.vue'
+import SearchByWords from './search/SearchByWords.vue'
+import SearchVerseContainer from './verse_container/SearchVerseContainer.vue'
 import mixins from '../utility/mixins.js'
 import { ipcRenderer } from 'electron'
+// import Constants from '../constants/constants'
 
-const BookType = {
-  NKJV: 0,
-  KYHG: 1,
-  RVR: 2,
-};
+// const BookType = {
+//   NKJV: 0,
+//   KYHG: 1,
+//   RVR: 2,
+// };
+
+
 
 export default {
-    name: 'BibleViwer',
+    name: 'BibleSearcher',
     mixins: [mixins],
+    components: {
+        SearchByWords,
+        SearchVerseContainer,
+    },
     created() { 
         ipcRenderer.on('shortkey-message', (event, arg) => {
             if (arg == "font-increase") {
@@ -116,10 +121,9 @@ export default {
     },
     data() {
         return {
-            searchTypeShow: true,
+            searchTypeShow: false,
             searchQuery: "",
-            bibleHash: {},
-            searchBiblehash: {},
+            searchBibleHash: {},
             fontSize: 20,
             versesColumnSize: 10,
             showNKJV: true,
@@ -128,85 +132,7 @@ export default {
         }
     },
 
-    components: {
-        Search,
-        VerseContainer,
-    },
-
     methods: {
-        copyToClipboard() {
-            let textToCopy = ""
-            const verses = this.bibleHash.verses
-            const chapter = this.bibleHash.chapter
-            const bookNumberString = this.getBookNumberString(this.bibleHash.book.nkjv)
-            if (this.showNKJV) {
-                const formattedVerses = this.formatVerses(this.bibleHash.searchedVersesHash, verses,
-                                                    chapter, this.bibleHash.book.nkjv, BookType.NKJV,
-                                                    bookNumberString)
-                textToCopy = textToCopy.concat(`${formattedVerses}\n\n`)
-            }
-            if (this.showKYHG) {
-                const formattedVerses = this.formatVerses(this.bibleHash.searchedVersesHash, verses,
-                                                    chapter, this.bibleHash.book.kyhg, BookType.KYHG,
-                                                    bookNumberString)
-                textToCopy = textToCopy.concat(`${formattedVerses}\n\n`)    
-            }
-            if (this.showRVR) {
-                const formattedVerses = this.formatVerses(this.bibleHash.searchedVersesHash, verses,
-                                                    chapter, this.bibleHash.book.rvr, BookType.RVR,
-                                                    bookNumberString)
-                textToCopy = textToCopy.concat(`${formattedVerses}\n\n`)    
-            }
-            
-            this.$copyText(textToCopy).then(() => {
-            }, (e) => {
-                console.log(`Failed to copy to clipboard : ${e}`)
-            })
-        },
-        formatVerses(searchedVersesHash, verses, chapter, book, bookType, bookNumberString) {
-            let formatted = ""
-            const chapterSearch = verses == ""
-            if (chapterSearch) { var verseCount = this.getVerseCountInt(bookNumberString, chapter)}
-
-            switch(bookType) {
-                case BookType.NKJV:
-                    formatted = searchedVersesHash.map((verseHash) => {
-                        return `${verseHash.verseNumber} ${verseHash.nkjvVerse}`
-                    })
-                    formatted = formatted.join('  ')
-                    if (chapterSearch) {
-                        formatted = formatted.concat(` (${book} ${chapter}:1-${verseCount})`)
-                    } else {
-                        formatted = formatted.concat(` (${book} ${chapter}:${verses})`)
-                    }
-                    
-                    break
-                case BookType.KYHG:
-                    formatted = searchedVersesHash.map((verseHash) => {
-                        return `${verseHash.verseNumber} ${verseHash.kyhgVerse}`
-                    })
-                    formatted = formatted.join('  ')
-                    if (chapterSearch) {
-                        formatted = formatted.concat(` (${book} ${chapter}:1-${verseCount})`)
-                    } else {
-                        formatted = formatted.concat(` (${book} ${chapter}:${verses})`)
-                    }
-                    break
-                case BookType.RVR:
-                    formatted = searchedVersesHash.map((verseHash) => {
-                        return `${verseHash.verseNumber} ${verseHash.rvrVerse}`
-                    })
-                    formatted = formatted.join('  ')
-                    if (chapterSearch) {
-                        formatted = formatted.concat(` (${book} ${chapter}:1-${verseCount})`)
-                    } else {
-                        formatted = formatted.concat(` (${book} ${chapter}:${verses})`)
-                    }
-                    break
-            }
-
-            return formatted
-        },
         showAllBibles() {
             this.showNKJV = true
             this.showKYHG = true
@@ -462,109 +388,149 @@ export default {
             }
             return { bookName: bookName, kyhgVerseOutput: verseOutput }
         },
-        handleSearchRequest(searchQuery) {
-            let verseText = searchQuery.match(this.searchRegex())
-            var bookName = ""
-            var chapter = ""
-            var verses = ""
-            if (verseText != null) {
-                let splitText = verseText[0].split(' ', 4)
-                if (splitText.length > 3) {
-                    // Song of Solomon
-                    bookName = `${splitText[0]} ${splitText[1]} ${splitText[2]}`
-                    const remainder = splitText[3].split(':', 2)
-                    chapter = remainder[0]
-                    verses = remainder[1] || ""
-                } else if (splitText.length > 2) {
-                    bookName = `${splitText[0]} ${splitText[1]}`
-                    const remainder = splitText[2].split(':', 2)
-                    chapter = remainder[0]
-                    verses = remainder[1] || ""
-                } else {
-                    bookName = splitText[0]
-                    const remainder = splitText[1].split(':', 2)
-                    chapter = remainder[0]
-                    verses = remainder[1] || ""
-                }
-            }
-            
-            if (bookName == "") { return }
+        handleSearchRequest(searchQuery, searchType) {
+            console.log(searchType)
 
-            // convert search string to equivalent nkjv book
-            if (!this.isFullNKJVBookName(bookName)) {
-                bookName = this.getFullNKJVBookName(bookName)
-            }
-            
-            // sanitize verse text
-            if (verses != "") {
-                const verseCount = this.getChapterVerseCount(bookName, chapter)
-
-                if (verses.includes("-")) {
-                    let verseRange = verses.split('-', 2)
-                    let min = Number(verseRange[0])
-                    let max = Number(verseRange[1])
-
-                    if (min > max) { return }
-                    if (min < 1 || max < 1) { return }
-
-                    if (min > verseCount) { min = verseCount }
-                    if (max > verseCount) { max = verseCount }
-                    verses = `${min}-${max}`
-                } else if (Number(verses) > verseCount) {
-                    verses = `${verseCount}`
-                } 
-            }
-            
-            // if verse range is a duplicate, reduce.
-            // ex - Genesis 1:2-2  =>  Genesis 1:2
-            if (this.sameVerseInRange(verses)) {
-                verses = this.getMinVerseString(verses)
-            }
-            
-            this.performSearchByFullName(searchQuery, bookName, chapter, verses)
-        },
-        performSearchByFullName(searchQuery, nkjvBookName, chapter, verses) {
             let nkjvData = this.$store.state.nkjvData
-            var bookNumber = 0
-            var nkjvVerseOutput = []
             
+            var searchedVersesOutput = []
             for (let i=0; i < nkjvData.length; i++) {
                 let bookData = nkjvData[i]
-                if (bookData.bname.toLowerCase() == nkjvBookName.toLowerCase()) {
-                    bookNumber = Number(bookData.bnumber)
-                    nkjvVerseOutput = this.fetchNKJVVerses(bookData, chapter, verses)
-                    break
+                let chapterData = bookData.CHAPTER
+                if (Array.isArray(chapterData)) {
+                    chapterData.forEach((chapter) => {
+                        const verseData = chapter.VERS
+                        verseData.forEach((verse, index) => {
+                            const sanitizedVerse = this.sanitizeVerse(verse)
+                            const querySplit = searchQuery.split(' ')
+                            let matchFlag = true
+                            for(let i=0; i<querySplit.length; i++){
+                                const keyword = querySplit[i]
+                                const match = sanitizedVerse.match(new RegExp(keyword, 'ig'))
+                                if (match == null) {
+                                    matchFlag = false
+                                    break
+                                }
+                            }
+
+                            let updatedVerse = sanitizedVerse
+                            if (matchFlag) {
+                                querySplit.forEach((keyword) => {
+                                    const match = updatedVerse.match(new RegExp(keyword, 'ig'))
+                                    let indexPosition = 0
+                                    let partiallyUpdated = updatedVerse
+                                    for(let i=0; i < match.length; i++) {
+                                        const index = partiallyUpdated.toLowerCase().indexOf(keyword.toLowerCase(), indexPosition)
+                                        if (index != -1) {
+                                            const replacement = `<b style="color: #ff9d20;">${match[i]}</b>`
+                                            partiallyUpdated = this.replaceAt(partiallyUpdated, index, match[i], replacement)
+                                            indexPosition = index + replacement.length
+                                        }
+                                    }
+                                    updatedVerse = partiallyUpdated
+                                })
+                                searchedVersesOutput.push({ book: bookData.bname, 
+                                                    chapter: chapter.cnumber,
+                                                    verseNumber: index+1,
+                                                    verse: updatedVerse })
+                            }
+                        })
+                    })
+                } else {
+                    const verseData = chapterData.VERS
+                    verseData.forEach((verse, index) => {
+                        const sanitizedVerse = this.sanitizeVerse(verse)
+                        const querySplit = searchQuery.split(' ')
+                        let matchFlag = true
+                        for(let i=0; i<querySplit.length; i++){
+                            const keyword = querySplit[i]
+                            const match = sanitizedVerse.match(new RegExp(keyword, 'ig'))
+                            if (match == null) {
+                                matchFlag = false
+                                break
+                            }
+                        }
+
+                        let updatedVerse = sanitizedVerse
+                        if (matchFlag) {
+                            querySplit.forEach((keyword) => {
+                                const match = updatedVerse.match(new RegExp(keyword, 'ig'))
+                                let indexPosition = 0
+                                let partiallyUpdated = updatedVerse
+                                for(let i=0; i < match.length; i++) {
+                                    const index = partiallyUpdated.toLowerCase().indexOf(keyword.toLowerCase(), indexPosition)
+                                    if (index != -1) {
+                                        const replacement = `<b style="color: #ff9d20;">${match[i]}</b>`
+                                        partiallyUpdated = this.replaceAt(partiallyUpdated, index, match[i], replacement)
+                                        indexPosition = index + replacement.length
+                                    }
+                                }
+                                updatedVerse = partiallyUpdated
+                            })
+                            searchedVersesOutput.push({ book: bookData.bname, 
+                                                chapter: chapterData.cnumber,
+                                                verseNumber: index+1,
+                                                verse: updatedVerse })
+                        }
+                    })
                 }
             }
+            console.log(searchedVersesOutput.length)
+            console.log("whathtttttt "+JSON.stringify(searchedVersesOutput))
 
-            if (nkjvVerseOutput.length == 0) {
-                this.bibleHash = { invalidSearch: true }
-            } else {
-                let rvrOutput = this.fetchRVRVerses(bookNumber, chapter, verses)
-                let kyhgOutput = this.fetchKYHGVerses(bookNumber, chapter, verses)
+            let searchedVersesHash = []
+            searchedVersesOutput.forEach((verseHash, index) => {
+                searchedVersesHash.push({ book: verseHash.book,
+                                          chapter: verseHash.chapter,
+                                          verseNumber: verseHash.verseNumber,
+                                          nkjvVerse: verseHash.verse,
+                                          index: index })
+            })
+            console.log("mike check after parse : " + JSON.stringify(searchedVersesHash))
+            this.searchBibleHash = { searchedVersesHash: searchedVersesHash }
+        },
+        // performSearchByFullName(searchQuery, nkjvBookName, chapter, verses) {
+        //     let nkjvData = this.$store.state.nkjvData
+        //     var bookNumber = 0
+        //     var nkjvVerseOutput = []
+            
+        //     for (let i=0; i < nkjvData.length; i++) {
+        //         let bookData = nkjvData[i]
+        //         if (bookData.bname.toLowerCase() == nkjvBookName.toLowerCase()) {
+        //             bookNumber = Number(bookData.bnumber)
+        //             nkjvVerseOutput = this.fetchNKJVVerses(bookData, chapter, verses)
+        //             break
+        //         }
+        //     }
+
+        //     if (nkjvVerseOutput.length == 0) {
+        //         this.bibleHash = { invalidSearch: true }
+        //     } else {
+        //         let rvrOutput = this.fetchRVRVerses(bookNumber, chapter, verses)
+        //         let kyhgOutput = this.fetchKYHGVerses(bookNumber, chapter, verses)
                 
-                let searchedVersesHash = []
+        //         let searchedVersesHash = []
 
-                // re-organize all bible data
-                for (let i=0; i<nkjvVerseOutput.length; i++) {
-                    let nkjvVerseData = nkjvVerseOutput[i]
-                    let rvrVerseData = rvrOutput.rvrVerseOutput[i]
-                    let kyhgVerseData = kyhgOutput.kyhgVerseOutput[i]
-                    searchedVersesHash.push({ verseNumber: nkjvVerseData.verseNumber,
-                                              nkjvVerse: nkjvVerseData.verse,
-                                              rvrVerse: rvrVerseData.verse,
-                                              kyhgVerse: kyhgVerseData.verse })
-                }
+        //         // re-organize all bible data
+        //         for (let i=0; i<nkjvVerseOutput.length; i++) {
+        //             let nkjvVerseData = nkjvVerseOutput[i]
+        //             let rvrVerseData = rvrOutput.rvrVerseOutput[i]
+        //             let kyhgVerseData = kyhgOutput.kyhgVerseOutput[i]
+        //             searchedVersesHash.push({ verseNumber: nkjvVerseData.verseNumber,
+        //                                       nkjvVerse: nkjvVerseData.verse,
+        //                                       rvrVerse: rvrVerseData.verse,
+        //                                       kyhgVerse: kyhgVerseData.verse })
+        //         }
 
-                this.bibleHash = { book: { nkjv: nkjvBookName.trim(),
-                                           rvr: rvrOutput.bookName.trim(),
-                                           kyhg: kyhgOutput.bookName.trim() },
-                                   chapter: chapter.trim(),
-                                   verses: verses.trim(),
-                                   searchedVersesHash: searchedVersesHash }
-                this.copyToClipboard()
-            }
-        }
+        //         this.bibleHash = { book: { nkjv: nkjvBookName.trim(),
+        //                                    rvr: rvrOutput.bookName.trim(),
+        //                                    kyhg: kyhgOutput.bookName.trim() },
+        //                            chapter: chapter.trim(),
+        //                            verses: verses.trim(),
+        //                            searchedVersesHash: searchedVersesHash }
+        //         this.copyToClipboard()
+        //     }
+        // }
     }
 }
 </script>
