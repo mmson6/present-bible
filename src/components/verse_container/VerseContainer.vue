@@ -11,7 +11,7 @@
         <b-row class="verse-padding">
             <b-col v-show="showVersesPaddingColumns"></b-col>
             <b-col v-bind:cols="versesColumnSize" class="text-left">
-                <template v-show="searchTypeShow" v-for="verseHash in bibleHash.searchedVersesHash">
+                <template v-for="verseHash in bibleHash.searchedVersesHash">
                     <Verse :key="verseHash.verseNumber" 
                             v-bind:verseHash="verseHash"
                             v-bind:verseFontSize="fontSize"

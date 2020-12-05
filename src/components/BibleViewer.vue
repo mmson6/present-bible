@@ -64,8 +64,7 @@
                         v-bind:versesColumnSize="versesColumnSize"
                         v-bind:showNKJV="showNKJV"
                         v-bind:showKYHG="showKYHG"
-                        v-bind:showRVR="showRVR"
-                        v-bind:searchTypeShow="searchTypeShow"/>
+                        v-bind:showRVR="showRVR"/>
     </b-container>
 </template>
 
@@ -116,7 +115,6 @@ export default {
     },
     data() {
         return {
-            searchTypeShow: true,
             searchQuery: "",
             bibleHash: {},
             searchBiblehash: {},
@@ -346,7 +344,7 @@ export default {
         },
         fetchRVRVerses(bookNumber, chapter, verses) {
             var verseOutput = []
-            let rvrData = this.$store.state.rvrData
+            let rvrData = this.$store.state.rvr1960Data
             let bookData = rvrData[bookNumber-1]
             var bookName = ""
 

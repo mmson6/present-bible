@@ -11,11 +11,11 @@ Vue.config.productionTip = false
 
 // Read data from bible.json and store 
 import nkjvData from './data/nkjv.json'
-import rvrData from './data/rvr1960.json'
+import rvr1960Data from './data/rvr1960.json'
 import kyhgData from './data/kyhg.json'
 import router from './router'
 store.commit('setNKJVData', nkjvData)
-store.commit('setRVRData', rvrData)
+store.commit('setRVR1960Data', rvr1960Data)
 store.commit('setKYHGData', kyhgData)
 
 new Vue({

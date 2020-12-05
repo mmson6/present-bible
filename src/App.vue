@@ -12,6 +12,27 @@
   </div>
 </template>
 
+<script>
+
+import { ipcRenderer } from 'electron'
+
+export default {
+  name: 'App',
+  created() {
+    ipcRenderer.on('shortkey-message', (event, arg) => {
+      if (arg == "go-to-show-screen") {
+        if (this.$route.name != "Show") {
+          this.$router.push('/')
+        }
+      } else if (arg == "go-to-search-screen") {
+        if (this.$route.name != "Search") {
+          this.$router.push('/search')
+        }
+      }
+    })
+  }
+}
+</script>
 <style lang="scss">
 
 

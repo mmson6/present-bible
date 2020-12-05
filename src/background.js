@@ -84,6 +84,17 @@ async function createWindow() {
         { role: 'forceReload' },
         { role: 'toggleDevTools' },
         { type: 'separator' },
+        { label: 'Go To Show Screen',
+          click: () => {
+            win.webContents.send('shortkey-message', 'go-to-show-screen')
+          },
+          accelerator: 'CmdOrCtrl + Option + 1' },
+        { label: 'Go To Search Screen',
+          click: () => {
+            win.webContents.send('shortkey-message', 'go-to-search-screen')
+          },
+          accelerator: 'CmdOrCtrl + Option + 2' },
+        { type: 'separator' },
         { label: 'Toggle NKJV',
           click: () => {
             win.webContents.send('shortkey-message', 'toggle-nkjv')

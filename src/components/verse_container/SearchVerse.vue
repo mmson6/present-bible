@@ -4,10 +4,9 @@
             <span v-bind:style="{ fontSize: verseNumberFontSize + 'px'}">{{verseInfo}}</span>
         </div>
         <div class="verses">
-            <div v-show="showNKJV" class="eng-verse"><span v-html="verseHash.nkjvVerse"></span></div>
-            <div v-show="showKYHG" v-bind:style="{ color: kyhgVerseColor }" class="kor-verse">{{verseHash.kyhgVerse}}</div>
-            <div v-show="showRVR" v-bind:style="{ color: rvrVerseColor }" class="spn-verse">{{verseHash.rvrVerse}}</div>
-            <br>
+            <div v-show="showNKJV" class="found-verses"><span v-html="verseHash.nkjvVerse"></span></div>
+            <div v-show="showKYHG" lass="found-verses"><span v-html="verseHash.kyhgVerse"></span></div>
+            <div v-show="showRVR" lass="found-verses"><span v-html="verseHash.rvrVerse"></span></div>
         </div>
     </b-row>
 </template>
@@ -18,7 +17,6 @@ export default {
     props: ['verseHash', 'verseFontSize', 'showNKJV', 'showRVR', 'showKYHG'],
 
     created() { 
-        console.log(`check verseHash : ${JSON.stringify(this.verseHash)}`)
     },
     computed: {
         verseInfo() {
@@ -50,7 +48,7 @@ export default {
     /* align-content: left; */
     color: white;
 }
-.eng-verse {
+.found-verses {
     margin-bottom: 10px;
     align-content: left;
     color: white;
@@ -69,7 +67,7 @@ export default {
 }
 
 .verse-info {
-    color: #5eff41;
+    color: #41fff6;
     display: block;
     flex: 20%;
     word-wrap: break-word;
