@@ -10,7 +10,7 @@
                     <b-dropdown-item v-on:click="allSectionsClicked">
                         {{allSectionsText}}
                     </b-dropdown-item>
-                    <div class="dropdown-divider"></div>
+                    <div v-show="OTSectionBookCountHash.length > 0 || NTSectionBookCountHash.length > 0" class="dropdown-divider"></div>
                     <b-dropdown-item v-show="OTSectionCount > 0" v-on:click="OTSectionClicked">
                         {{OTSectionText}}
                     </b-dropdown-item>
@@ -23,13 +23,13 @@
                     <b-dropdown-item v-on:click="allBooksClicked">
                         {{allBooksText}}
                     </b-dropdown-item>
-                    <div v-show="!this.NTSectionSelected">
+                    <div v-show="!this.NTSectionSelected && OTSectionBookCountHash.length > 0">
                         <div class="dropdown-divider"></div>
                         <b-dropdown-item v-on:click="bookClicked(OTBookData.bname, OTBookData.bnumber)" :key="OTBookData.bname" v-for="OTBookData in OTSectionBookCountHash">
                             <span>{{SectionBookText(OTBookData.bname, OTBookData.bookCount)}}</span>
                         </b-dropdown-item>
                     </div>
-                    <div v-show="!this.OTSectionSelected">
+                    <div v-show="!this.OTSectionSelected && NTSectionBookCountHash.length > 0">
                         <div class="dropdown-divider"></div>
                         <b-dropdown-item v-on:click="bookClicked(NTBookData.bname, NTBookData.bnumber)" :key="NTBookData.bname" v-for="NTBookData in NTSectionBookCountHash">
                             <span>{{SectionBookText(NTBookData.bname, NTBookData.bookCount)}}</span>
@@ -214,6 +214,7 @@ export default {
         },
     },
     methods: {
+        
         SectionBookText(bname, bookCount) {
             return `${bname} (${bookCount})`
         },
@@ -226,6 +227,7 @@ export default {
                     filtered.push(item)
                 }
             })
+            
             return filtered
         },
         getAllNTBooks() {
