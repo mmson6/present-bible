@@ -86,30 +86,32 @@ export default {
     mixins: [mixins],
     created() { 
         ipcRenderer.on('shortkey-message', (event, arg) => {
-            if (arg == "font-increase") {
-                this.fontSizeUp()
-            } else if (arg == "font-decrease") {
-                this.fontSizeDown()
-            } else if (arg == "font-restore") {
-                this.fontSizeReset()
-            } else if (arg == "toggle-nkjv") {
-                this.toggleNKJV()
-            } else if (arg == "toggle-kyhg") {
-                this.toggleKYHG()
-            } else if (arg == "toggle-rvr") {
-                this.toggleRVR()
-            } else if (arg == "show-all") {
-                this.showAllBibles()
-            } else if (arg == "verse-container-increase") {
-                this.sidePaddingSmaller()
-            } else if (arg == "verse-container-decrease") {
-                this.sidePaddingBigger()
-            } else if (arg == "verse-container-restore") {
-                this.sidePaddingReset()
-            } else if (arg == "suggest-feature") {
-                window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Feature Suggestion&body=message%20goes%20here";
-            } else if (arg == "report-issue") {
-                window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Issue Report&body=message%20goes%20here";
+            if (this.$route.name == "Show") {
+                if (arg == "font-increase") {
+                    this.fontSizeUp()
+                } else if (arg == "font-decrease") {
+                    this.fontSizeDown()
+                } else if (arg == "font-restore") {
+                    this.fontSizeReset()
+                } else if (arg == "toggle-nkjv") {
+                    this.toggleNKJV()
+                } else if (arg == "toggle-kyhg") {
+                    this.toggleKYHG()
+                } else if (arg == "toggle-rvr") {
+                    this.toggleRVR()
+                } else if (arg == "show-all") {
+                    this.showAllBibles()
+                } else if (arg == "verse-container-increase") {
+                    this.sidePaddingSmaller()
+                } else if (arg == "verse-container-decrease") {
+                    this.sidePaddingBigger()
+                } else if (arg == "verse-container-restore") {
+                    this.sidePaddingReset()
+                } else if (arg == "suggest-feature") {
+                    window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Feature Suggestion&body=message%20goes%20here";
+                } else if (arg == "report-issue") {
+                    window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Issue Report&body=message%20goes%20here";
+                }
             }
         })
     },

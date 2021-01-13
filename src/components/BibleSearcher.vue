@@ -53,7 +53,8 @@
                               v-bind:showNKJV="showNKJV"
                               v-bind:showKYHG="showKYHG"
                               v-bind:showRVR="showRVR"
-                              v-bind:searchBibleType="searchBibleType"/>
+                              v-bind:searchBibleType="searchBibleType"
+                              :bus="bus"/>
     </b-container>
 </template>
 
@@ -64,6 +65,7 @@ import SearchVerseContainer from './verse_container/SearchVerseContainer.vue'
 import mixins from '../utility/mixins.js'
 import { ipcRenderer } from 'electron'
 import Constants from '../constants/constants'
+import Vue from 'vue'
 
 export default {
     name: 'BibleSearcher',
@@ -78,33 +80,36 @@ export default {
         this.updateSearchType()
 
         ipcRenderer.on('shortkey-message', (event, arg) => {
-            if (arg == "font-increase") {
-                this.fontSizeUp()
-            } else if (arg == "font-decrease") {
-                this.fontSizeDown()
-            } else if (arg == "font-restore") {
-                this.fontSizeReset()
-            } else if (arg == "toggle-nkjv") {
-                this.toggleNKJV()
-            } else if (arg == "toggle-kyhg") {
-                this.toggleKYHG()
-            } else if (arg == "toggle-rvr") {
-                this.toggleRVR()
-            } else if (arg == "verse-container-increase") {
-                this.sidePaddingSmaller()
-            } else if (arg == "verse-container-decrease") {
-                this.sidePaddingBigger()
-            } else if (arg == "verse-container-restore") {
-                this.sidePaddingReset()
-            } else if (arg == "suggest-feature") {
-                window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Feature Suggestion&body=message%20goes%20here";
-            } else if (arg == "report-issue") {
-                window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Issue Report&body=message%20goes%20here";
+            if (this.$route.name == "Search") {
+                if (arg == "font-increase") {
+                    this.fontSizeUp()
+                } else if (arg == "font-decrease") {
+                    this.fontSizeDown()
+                } else if (arg == "font-restore") {
+                    this.fontSizeReset()
+                } else if (arg == "toggle-nkjv") {
+                    this.toggleNKJV()
+                } else if (arg == "toggle-kyhg") {
+                    this.toggleKYHG()
+                } else if (arg == "toggle-rvr") {
+                    this.toggleRVR()
+                } else if (arg == "verse-container-increase") {
+                    this.sidePaddingSmaller()
+                } else if (arg == "verse-container-decrease") {
+                    this.sidePaddingBigger()
+                } else if (arg == "verse-container-restore") {
+                    this.sidePaddingReset()
+                } else if (arg == "suggest-feature") {
+                    window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Feature Suggestion&body=message%20goes%20here";
+                } else if (arg == "report-issue") {
+                    window.location.href = "mailto:mmson6@gmail.com?subject=Biblos Issue Report&body=message%20goes%20here";
+                }
             }
         })
     },
     data() {
         return {
+            bus: new Vue(),
             selectedBible: "",
             searchType: "",
             searchBibleType: Constants.BibleType.NKJV,
@@ -119,6 +124,9 @@ export default {
     },
 
     methods: {
+        resetPreviousSearch() {
+            this.bus.$emit('resetSearch');
+        },
         updateSelectedBible(value) {
             this.selectedBible = value
         },
@@ -192,23 +200,10 @@ export default {
             sanitized = sanitized.replace(/\]/g,'')
             return sanitized
         },
-        getChapterVerseCount(bookFullNameNKJV, chapter) {
-            const bookNumberString = this.getBookNumberString(bookFullNameNKJV)
-            return this.getVerseCountInt(bookNumberString, chapter)
-        },
-        getMinVerseString(verses) {
-            if (!verses.includes("-")) { return null }
-
-            let verseRange = verses.split('-', 2)
-            return verseRange[0]
-        },
-        sameVerseInRange(verses) {
-            if (!verses.includes("-")) { return false }
-        
-            let verseRange = verses.split('-', 2)
-            return Number(verseRange[0]) == Number(verseRange[1])
-        },
         handleSearchRequest(searchQuery) {
+            // reset previous search data
+            this.resetPreviousSearch()
+            
             let searchResult = {}
 
             switch (this.searchType) {
@@ -228,7 +223,7 @@ export default {
                     this.showVersesInRVR1960()
                     break
             }
-
+            
             this.searchBibleHash = { OTCount: searchResult.OTCount,
                                      NTCount: searchResult.NTCount,
                                      searchedVersesHash: searchResult.searchedVersesHash }

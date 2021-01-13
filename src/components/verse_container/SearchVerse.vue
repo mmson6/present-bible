@@ -25,18 +25,6 @@ export default {
         verseNumberFontSize() {
             return 20
         },
-        rvrVerseColor() {
-            if (this.showNKJV == false && this.showKYHG == false) { return "white" }
-            
-            return "yellow"
-        },
-        kyhgVerseColor() {
-            if (this.showNKJV == true) {
-                return "#ecd3b2"
-            } else {
-                return "white"
-            }
-        }
     }
 }
 </script>
@@ -44,21 +32,13 @@ export default {
 <style scoped>
 .verses {
     flex: 80%;
-    /* margin-bottom: 10px; */
-    /* align-content: left; */
     color: white;
 }
+
 .found-verses {
     margin-bottom: 10px;
     align-content: left;
     color: white;
-}
-.spn-verse {
-    align-content: left;
-}
-.kor-verse {
-    margin-bottom: 10px;
-    align-content: left;
 }
 
 .verse-padding {
@@ -67,7 +47,7 @@ export default {
 }
 
 .verse-info {
-    color: #41fff6;
+    color: yellow;
     display: block;
     flex: 20%;
     word-wrap: break-word;
