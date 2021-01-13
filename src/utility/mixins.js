@@ -5,6 +5,9 @@ export default {
         isFullNKJVBookName: (bookName) => {
             return bibleData.Books.FullName.includes(bookName.toLowerCase())
         },
+        getNKJVCamelCase: (bookName) => {
+            return bibleData.Books.CamelCase[bookName.toLowerCase()]
+        },
         getFullNKJVBookName: (bookName) => {
             const fullName = bibleData.Books.Abbreviated[bookName]
             return fullName

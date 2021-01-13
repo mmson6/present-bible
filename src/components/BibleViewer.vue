@@ -493,8 +493,10 @@ export default {
             // convert search string to equivalent nkjv book
             if (!this.isFullNKJVBookName(bookName)) {
                 bookName = this.getFullNKJVBookName(bookName)
+            } else if (this.isFullNKJVBookName(bookName)) {
+                bookName = this.getNKJVCamelCase(bookName)
             }
-            
+
             // sanitize verse text
             if (verses != "") {
                 const verseCount = this.getChapterVerseCount(bookName, chapter)
